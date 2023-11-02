@@ -1,0 +1,31 @@
+# Left side
+RE3 -> debugger connector pin 1
+RA0 -> buttons matrix (ctrl on/off, menu/P)
+RA1 -> buttons matrix (ctrl hot water, clean)
+RA2 -> buttons matric (ctrl capuccino, 1 cup, 2 cups)
+RA3 -> ctrl LED ESC
+RA4 -> ctrl LED OK
+RA5 -> J2 connector pin 1
+(vss)
+RA7 -> ctrl cup light LEDs
+RA6 -> ctrl backlight LCD
+RC0 -> selector (left)
+RC1 -> selector (right)
+RC2 -> selector (push)
+RC3 -> serial mux selector
+
+# Right side
+RB7 -> buttons matrix (1 cup, hot water, menu/P pulldown) + debugger connector pin 2 (ISCP DATA)
+RB6 -> buttons matrix (2 cups, on/off, clean pulldown) + debugger connector pin 3 (ICSP CLK)
+RB5 -> buttons matrix (capuccino pulldown)
+RB4 -> SCL M24256/eeprom + SDL M41T100/rtc + SCL ST7036/lcd
+RB3 -> SDA M24566/eeprom + SDA M41T100/rtc + SDA ST7036/lcd
+RB2 -> /RST ST7036/lcd
+RB1 -> /WC M24566/eeprom
+RB0 => NC
+(vdd)
+(vss)
+RX -> serial mux
+TX -> serial mux
+RC5 -> buzzer
+RC4 -> power board connector pin 2

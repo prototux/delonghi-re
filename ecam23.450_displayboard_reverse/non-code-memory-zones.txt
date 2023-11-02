@@ -1,0 +1,59 @@
+# Entrypoint
+NULL  0x0003-0x0003 => end of _reset()
+
+# Init data
+CONST 0x00bf-0x00c3 => const data for bank 0 (0x66-0x68) and bank 1 (0xe0) init
+
+# LCD Data part 1
+CONST 0x07e7-0x07fc => string "ENERGY SAVING"
+NULL  0x07fd-0x7ff
+CONST 0x0800-0x082c => seemingly LCD data (init+config?)
+NULL  0x082d-0x0831
+
+# 3rd page padding data
+NULL  0x1000-0x1004
+
+# LCD Data part 2
+# Strings (16 chars long) for LCD (error messages + debug/test menus)
+CONST 0x1800-0x1815 => string "PRESS ESC + OK       "
+CONST 0x1816-0x182b => string "UART MODE            "
+CONST 0x182c-0x1841 => string "MOTOR UP             "
+CONST 0x1842-0x1857 => string "                     "
+CONST 0x1858-0x186d => string "EV1 ON               "
+CONST 0x186e-0x1883 => string "EV2 ON               "
+CONST 0x1884-0x1899 => string "GRINDER ON           "
+CONST 0x189a-0x18af => string "HEATER ON            "
+CONST 0x18b0-0x18c5 => string "ELECTRIC TEST MODE   "
+CONST 0x18c6-0x18db => string "PUMP ON              "
+CONST 0x18dc-0x18f0 => string "VAPORIZER ON         "
+CONST 0x18f2-0x18fa => const data (probably for screen)
+NULL  0x18fb-0x18ff
+CONST 0x1900-0x1915 => string "MOTOR DOWN           "
+CONST 0x1917-0x192b => string "LOAD TEST MODE       "
+CONST 0x192c-0x1941 => string "DISPLAY TEST MODE    "
+CONST 0x1942-0x1957 => string "BUTTON               "
+CONST 0x1958-0x196d => string "LIMIT SWITCH DOWN    "
+CONST 0x196e-0x1983 => string "                     "
+CONST 0x1984-0x1999 => string "LIMIT SWITCH UP      "
+CONST 0x199a-0x19ae => 16 * 0xFF (for LCD?)
+CONST 0x19af-0x19c3 => 16 * 0x00 (for LCD?)
+CONST 0x19d9-0x19ed => 16 * 0x17 (for LCD>)
+
+----- 0x1a02-0x1a28 => 2 unknown/uncalled functions
+      -> 0x1a03-0x1a15 => unknown/uncalled function
+      -> 0x1a16-0x1a28 => unknown/uncalled function
+
+# LCD Data (?) part 3
+CONST 0x1a35-0x1a3d => 8 bytes (0x1f*4 + 0x0*4)
+CONST 0x1a3e-0x1a46 => 8 bytes
+CONST 0x1a47-0x1a4f => 8 bytes
+
+NULL  0x1a50-0x1e5c
+
+----- 0x1e7f-0x1e8a => unknown/uncalled function
+
+# End of flash memory
+NULL  0x2000-0x2003
+NULL  0x2003-0x2006 => 0x00 array
+===== 0x2007-0x2007 => single word (0x33cc)
+NULL  0x2008-0x2FFF => end of flash padding

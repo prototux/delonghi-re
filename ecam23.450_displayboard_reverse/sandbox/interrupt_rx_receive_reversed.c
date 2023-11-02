@@ -2,7 +2,7 @@ void ISR_USART_RX(void)
 {
   // USART Error clearing here
   USART_RX_RECIVED_BYTE = RCREG;
-  char *buffer[0x17] = (char*)0x57;
+  char *buffer[0x17] = (char*)0x257;
 
   //  bit 3: full packet available to read
   //  bit 2: unknown
