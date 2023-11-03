@@ -79,7 +79,7 @@ PORTE: VPP // NOT USED
 * RA4 (OK LED) access: interrupt_handler_timer0
 * RA5 (J2 pin 1) access: no access
 * RA6 (LCD backlight): interrupt_handle_timer1, _reset/main
-* RA7 (cup light) access: USART_MAYBE_LOGIC
+* RA7 (cup light) access: USART_MAYBE_LOGIC, MAINLOOP_MAIN_LOGIC
 
 ## PORTB notes
 * init_hardware_1 inits the whole byte
@@ -94,7 +94,7 @@ PORTE: VPP // NOT USED
 ## PORTC notes
 * init_hardware_1 clears the whole byte
 * RC0/RC1/RC2 (selector) access: MAINLOOP_SUB2
-* RC3 (serial mux) access: USART_MAYBE_CONFIG
+* RC3 (serial mux) access: POWERBOARD_COM_INIT
 * RC4 (pwrb pin 4) access: unknown yes, never accessed
 * RC5 (buzzer) access: interrupt_handler_timer0
 * should not have RC6 and RC7 access (usart managed)

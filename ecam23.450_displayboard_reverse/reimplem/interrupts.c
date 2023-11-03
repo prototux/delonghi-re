@@ -130,13 +130,11 @@ void interrupt_handler_timer0(void)
 	USART_RX_RCVD_BYTE = !(TIMER0_INT_UNK2 & 0x01);
 	TIMER0_INT_UNK2 = ((USART_RX_RCVD_BYTE ^ TIMER0_INT_UNK2) & 0xfe) ^ USART_RX_RCVD_BYTE
 
-
 	// This turn on or off the OK LED
 	if ( !(INIT_HW1_UNK7 & 0x01) || !(TIMER0_INT_UNK2 & 0x01) )
 		SET(PORTA, 4);
 	else
 		CLR(PORTA, 4);
-
 
 	// This turn on or off the ESC LED
 	if ( !(INIT_HW1_UNK7 & 0x02) || !(TIMER0_INT_UNK2 & 0x01) )
