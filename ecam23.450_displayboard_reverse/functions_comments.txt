@@ -74,9 +74,16 @@ PORTE: VPP // NOT USED
 
 
 ## PORTA notes
+* RA0,1,2 (ctrl buttons) access: MAINLOOP_SUB2
+* RA3 (ESC LED) access: interrupt_handler_timer0
+* RA4 (OK LED) access: interrupt_handler_timer0
+* RA5 (J2 pin 1) access: no access
+* RA6 (LCD backlight): interrupt_handle_timer1, _reset/main
+* RA7 (cup light) access: USART_MAYBE_LOGIC
 
 ## PORTB notes
 * init_hardware_1 inits the whole byte
+* RB0 is not connected
 * RB1 (/wc eeprom) access: Cecile
 * RB2 (reset lcd) access: Emy
 * RB3/RB4 (I2C/SPI) access: Elsa, Alice, Aline, Agathe

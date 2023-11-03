@@ -15,6 +15,11 @@ char HW_INIT2_UNK5; // 0x3c
 
 char HW_INIT2_UNK4; // 0x3e
 
+char USART_TX_UNKNOWN; // 0x40
+
+char USART_TX_BUFFER_INDEX; // 0x44
+char USART_TX_PACKET_SIZE; // 0x45
+
 char HW_INIT2_UNK8; // 0x47
 char HW_INIT2_UNK9; // 0x48
 char HW_INIT2_UNK6; // 0x49

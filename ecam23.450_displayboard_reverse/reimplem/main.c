@@ -60,15 +60,15 @@ void main(void)
 
 	// Init hardware
 	init_hardware_1();
-	SET(FSR, 6); // why?
+	SET(PORTA, 6); // Enable LCD backlight
 	CLRWDT();
 	init_hardware_2();
 
 	init_something_2(); // This is probably power board communication
 
 	// This is more init functions
-	Emy(0x00);
-	Eleonore();
+	Emy(0x00); // Emy(0xff) is also called in MAINLOOP_MAIN_LOGIC
+	Eleonore(); // Eleonore is never called again, seems to init the softI2C
 
 	// Enable interrupts
 	SET(INTCON, PEIE);
