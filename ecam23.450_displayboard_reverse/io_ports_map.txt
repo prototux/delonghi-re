@@ -1,5 +1,5 @@
 # Left side
-RE3 -> debugger connector pin 1
+RE3 -> debugger connector pin 1 (VPP)
 RA0 -> buttons matrix (ctrl on/off, menu/P)
 RA1 -> buttons matrix (ctrl hot water, clean)
 RA2 -> buttons matric (ctrl capuccino, 1 cup, 2 cups)

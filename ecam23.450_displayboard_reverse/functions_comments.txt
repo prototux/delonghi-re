@@ -1,0 +1,90 @@
+# Functions in A (seems to work with GPIOs)
+Adele => end goto is Agathe
+Agathe => Set/Clear bits in PORTB, calls and end goto Anais
+Alice => is called by Adele
+Aline => Set/Clear bits in PORTB and TRISB and calls Anais
+Anais => seems legacy code as it's completly useless, it sets and unset the same bit, that's all
+      => is used as the end goto for Agathe, Caroline
+      => probably is a delay/wait for specific clock count for software I2C
+
+# Functions in C (breaks the decompiler)
+Caroline => is called by Coralie (and many others), end goto is Anais
+Cecile => is called by Coralie, MAIN_LOGIC_SUB2:BGT_1, MAYBE_USART_LOGIC, init_something_2 (called and is the end goto)
+          => seems eeprom related, at least enables write to it (for settings)
+Clara
+Clemence
+Coralie => Is called as part of the main loop, so Coralie is the SSP managing part of the main loop?
+
+# Functions in E (unknown)
+Eleonore
+Eliana
+Elise
+Eloane
+Elodie
+Eloise => seems to compute something for SSP related data, is called in init_something_2 and Coralie
+Elona
+Elsa
+Emilie
+Emma
+Emy
+Estelle
+Eva
+Evelise => seems to compute something for SSP related data, is called in SSP_PACKET_SEND, Eloise and Coralie
+
+# Unsure but named functions
+init_hardware_1
+init_hardware_2
+init_something_2
+USART_MAYBE_CHECKSUM
+USART_MAYBE_CONFIG
+USART_MAYBE_LOGIC
+MAINLOOP_SUB1
+MAINLOOP_SUB2: seems to manage the buttons (among other things)
+
+# Deadcode functions (never called)
+deadcode_1
+deadcode_2
+deadcode_3
+
+## Misc comments
+* Eloise, Evelise and Coralie seems to be SSP related
+* PORTB is accessed by Agathe, Alice, Cecile, Eleonore, Emy, Elsa, init_hardware_1 and MAINLOOP_SUB2
+        => buttons is probably Agathe, Alice
+        => I2C/SPI is probably SSP_PACKET_SEND (via SSPBUF), Cecile (reset or eeprom pins)
+* PORTC is accessed by init_hardware_1, interrupt_handler_timer0, MAINLOOP_SUB2 and USART_MAYBE_CONFIG
+
+
+## PORTS mapping
+### device view
+* buttons: PORTA (ctrl) and PORTB (read)
+* I2C/SPI: RB4 (SCL), RB3 (SDA), RB2 (reset LCD) and RB1 (/wc eeprom)
+* LEDs: PORTA (OK, ESC, cup light, LCD backlight)
+* buzzer: PORTC (RC5)
+* selector: PORTC (RC0,1,2 -> left, right, push)
+* uart: tx (RC6), rx (RC7) and PORTC (RC3 -> serial mux selector)
+* GPIOs: RC4 (power board conn pin 2), RE3 (dbg conn pin 1/VPP) and RA5 (J2 pin 1)
+### port view
+PORTA: buttons (ctrl), J2 conn pin 1, LEDs
+PORTB: buttons (read), I2C/SPI
+PORTC: buzzer, selector, uart, pwrb conn pin 2
+PORTE: VPP // NOT USED
+
+
+## PORTA notes
+
+## PORTB notes
+* init_hardware_1 inits the whole byte
+* RB1 (/wc eeprom) access: Cecile
+* RB2 (reset lcd) access: Emy
+* RB3/RB4 (I2C/SPI) access: Elsa, Alice, Aline, Agathe
+                            => those looks a lot like bitbang'd serial? what is SSP for then?
+                            => maybe it's for the other machines that communicate using SPI, and not used here?
+* RB5,6,7 (buttons read) access: MAINLOOP_SUB2
+
+## PORTC notes
+* init_hardware_1 clears the whole byte
+* RC0/RC1/RC2 (selector) access: MAINLOOP_SUB2
+* RC3 (serial mux) access: USART_MAYBE_CONFIG
+* RC4 (pwrb pin 4) access: probably I2C to power board
+* RC5 (buzzer) access: interrupt_handler_timer0
+* should not have RC6 and RC7 access (usart managed)
