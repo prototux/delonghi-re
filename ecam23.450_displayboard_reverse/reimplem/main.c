@@ -74,7 +74,6 @@ void main(void)
 	SET(INTCON, PEIE);
 	SET(INTCON, GIE);
 
-
 	// Main loop
 	do
 	{
@@ -128,4 +127,125 @@ char init_ram_with_data(char end)
 	} while (ENTRY_SUB2_UNK1 != 0);
 
 	return 0x00; // Only to reset wreg
+}
+
+// First part of the hardware init
+void init_hardware_1(void)
+{
+	// Disable interrupts (should already be disabled by default, but oh well)
+	CLR(INTCON, GIE);
+	CLR(INTCON, PEIE);
+
+	OSCON = 0x70;
+	OPTION_REG = 0xc6;
+	INTCON = 0x00;
+
+	// Interrupts config
+	PIE1 = 0x00;
+	PIE2 = 0x00;
+	PCON = 0x00;
+	PIR1 = 0x00;
+	PIR2 = 0x00;
+
+	// Watchdog cofnig
+	WPUB = 0x00;
+
+	// GPIO config
+	TRISA = 0x00;
+	TRISB = 0xe0;
+	IOCB = 0x00;
+
+	// Timer 0 config
+	TMR0 = 0xfd;
+	CLR(INTCON, TMR0IE);
+
+	// Timer 1 config
+	T1CON = 0x01;
+	CLR(PIE1, 0)
+
+	// Timer 2 config
+	TMR2 = 0x00;
+
+	// PORTC tristate config
+	TRISC = 0x87;
+
+	// Timer 2 config again
+	T2CON = 0x01;
+
+	CCP1CON = 0xac;
+
+	ADCON1 = 0x50;
+	ADCON0 = 0x00;
+
+	ANSEL = 0x00;
+
+	// LCD Config
+	LCDCON = 0x00;
+	LCDSE0 = 0x00;
+	LCDSE1 = 0x00;
+	LCDSE2 = 0x00;
+	LVDCON = 0x00;
+
+	// SSP (I2C/SPI) config
+	SSPSTAT = 0x00;
+	SSPCON = 0x00;
+
+	// EEPROM config
+	EECON1 = 0x00;
+
+	CMCON0 = 0xff;
+	VRCON = 0x00;
+
+	// Vars init
+	SSP_PACKET_UNK1 = 0x00;
+	INIT_HW1_UNK1 = 0x00;
+	INIT_HW1_UNK2 = 0x00;
+	INIT_HW1_UNK3 = 0x00;
+	INIT_HW1_UNK4 = 0x00;
+	INIT_HW1_UNK5 = 0x00;
+	INIT_HW1_UNK6 = 0x00;
+	INIT_HW1_UNK7 = 0x00;
+	INIT_HW1_UNK8 = 0x00;
+	ENTRY_DATA_UNK4 = 0x00;
+}
+
+
+// Second part of the hardware init
+void init_hardware_2(void)
+{
+	OPTION_REG = 0xc6;
+
+	// Timer 0 config
+	TMR0 = 0xfd;
+	CLR(INTCON, TMR0IF);
+	SET(INTCON, TMR0IE);
+
+	// Timer 1 config
+	T1CON = 0x01;
+	TMR1L = 0xa3;
+	TMR1H = 0xfc;
+	CLR(PIR1, 0);
+	SET(PIE1, 0);
+
+	// Comparator 1 config
+	CCP1CON = 0xac;
+
+	PR2 = 0x7d;
+
+	CCPR1L = 0x3e;
+
+	T2CON - 0x01;
+
+	// Vars init
+	HW_INIT2_UNK1 = 0x1a;
+	HW_INIT2_UNK2 = 0x0a;
+	HW_INIT2_UNK3 = 0x0a;
+	HW_INIT2_UNK4 = 0x1e;
+	HW_INIT2_UNK5 = 0x46;
+	HW_INIT2_UNK6 = 0x1e;
+	HW_INIT2_UNK7 = 0x3c;
+	HW_INIT2_UNK8 = 0x32;
+	HW_INIT2_UNK9 = 0x32;
+	HW_INIT2_UNK10 = 0x1e;
+	HW_INIT2_UNK11 = 0x0a;
 }
