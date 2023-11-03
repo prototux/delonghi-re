@@ -1,7 +1,7 @@
 # Functions in A (seems to work with GPIOs)
 Adele => end goto is Agathe
 Agathe => Set/Clear bits in PORTB, calls and end goto Anais
-Alice => is called by Adele
+Alice => is called by Adele, Caroline, Cecile, Clemence
 Aline => Set/Clear bits in PORTB and TRISB and calls Anais
 Anais => seems legacy code as it's completly useless, it sets and unset the same bit, that's all
       => is used as the end goto for Agathe, Caroline
@@ -12,8 +12,8 @@ Caroline => is called by Coralie (and many others), end goto is Anais
 Cecile => is called by Coralie, MAIN_LOGIC_SUB2:BGT_1, MAYBE_USART_LOGIC, init_something_2 (called and is the end goto)
           => seems eeprom related, at least enables write to it (for settings)
 Clara
-Clemence
-Coralie => Is called as part of the main loop, so Coralie is the SSP managing part of the main loop?
+Clemence => seems related to soft I2C/powerboard communication
+Coralie => Is called as part of the main loop, Coralie seems to be the powerboard communication manager
 
 # Functions in E (unknown)
 Eleonore
@@ -31,12 +31,15 @@ Estelle
 Eva
 Evelise => seems to compute something for SSP related data, is called in SSP_PACKET_SEND, Eloise and Coralie
 
+# Powerboard communication
+POWERBOARD_COM_INIT => selects (depending on the param) between I2C or UART, configures the registers and sets the RC3 (select on the 74HC4052 mux) accordingly
+                    => is called from USART_MAYBE_LOGIC (with I2C), Coralie (with UART and I2C)
+
 # Unsure but named functions
 init_hardware_1
 init_hardware_2
-init_something_2
+init_something_2 => seems to init the power board com
 USART_MAYBE_CHECKSUM
-USART_MAYBE_CONFIG
 USART_MAYBE_LOGIC
 MAINLOOP_SUB1
 MAINLOOP_SUB2: seems to manage the buttons (among other things)
@@ -85,6 +88,6 @@ PORTE: VPP // NOT USED
 * init_hardware_1 clears the whole byte
 * RC0/RC1/RC2 (selector) access: MAINLOOP_SUB2
 * RC3 (serial mux) access: USART_MAYBE_CONFIG
-* RC4 (pwrb pin 4) access: probably I2C to power board
+* RC4 (pwrb pin 4) access: unknown yes, never accessed
 * RC5 (buzzer) access: interrupt_handler_timer0
 * should not have RC6 and RC7 access (usart managed)
