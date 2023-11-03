@@ -2,6 +2,8 @@
 
 char INIT_HW1_UNK6; // 0x20
 
+char SSP_PACKET_DATA_18; // 0x2d
+
 char INIT_HW1_UNK8; // 0x32
 char ENTRY_DATA_UNK2; // 0x33
 char INIT_HW1_UNK7; // 0x34
@@ -27,6 +29,8 @@ char HW_INIT2_UNK6; // 0x49
 char HW_INIT2_UNK7; // 0x4b
 
 char HW_INIT2_UNK10; // 0x4d
+
+char TIMER1_UNK3; // 0x66
 
 // Shadow at 0x70
 // Ends at 0x7f

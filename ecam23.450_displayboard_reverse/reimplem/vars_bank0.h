@@ -5,11 +5,15 @@ char USART_SSP_PACKET_STATUS; // 0x2d
 
 char ENTRY_DATA_UNK1; // 0x2f
 
+char TIMER0_INT_UNK2; // 0x30
+
 char INIT_HW1_UNK2; // 0x32
-
+char INIT_HW1_UNK4; // 0x33
 char INIT_HW1_UNK3; // 0x34
-char INIT_HW1_UNK4; // 0x35
+char INIT_HW1_UNK5; // 0x35
+char TIMER1_UNK2; // 0x34
 
+char TIMER0_INT_UNK3; // 0x3d
 char SSP_PACKET_UNK1; // 0x3e
 char INIT_HW1_UNK1; // 0x3f
 
@@ -17,6 +21,9 @@ char SSP_TX_BUFFER_INDEX; // 0x40
 char SSP_PACKET_SIZE; // 0x41
 
 char SSP_UNK2; // 0x44
+char TIMER0_INT_UNK1; // 0x45
+
+char USART_RX_RCVD_BYTE; // 0x65
 
 char ISR_BKP_STATUS; // 0x69
 char ISR_BKP_FSR; // 0x6a
@@ -26,6 +33,7 @@ char ISR_BKP_FETCH_ADDR_H; // 0x6d
 char FETCH_ADDR_L; // 0x6e
 char FETCH_ADDR_H; // 0x6f
 
+// Shadowed vars at 0x70
 char ISR_BKP_SHWD3; // 0x70
 char ISR_BKP_SHWD1; // 0x71
 char ISR_BKP_SHWD2; // 0x72
@@ -37,5 +45,4 @@ char ISR_BKP_SHWD5; // 0x76
 char ISR_BKP_WREG; // 0x78
 char ENTRY_SUB2_UNK1; // 0x79
 
-// Shadowed vars at 0x70
 // Ends at 0x7f
