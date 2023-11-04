@@ -175,6 +175,59 @@ void USART_PACKET_SEND_3()
 
 void SSP_PACKET_SEND()
 {
+	// That's a lot of conditions there just to set ENTRY_DATA_UNK2
+	if (SSP_PACKET_DATA_18 || ENTRY_DATA_UNK2 == 0xff || (TIMER1_UNK4 & 0x3f) || (SSP_PACKET_UNK1 & 0x01))
+		ENTRY_DATA_UNK2 = 0x0a;
+	if (!SSP_PACKET_DATA_18 || !ENTRY_DATA_UNK2)
+		ENTRY_DATA_UNK2 = 0xff;
+
+	// Copy some data
+	SSP_PACKET_DATA_12 = SSP_PACKET_DATA_12_SRC;
+	SSP_PACKET_DATA_18_MASK_SRC = SSP_PACKET_DATA_18_MASK;
+
+	// Build part of the packet
+	SSP_BUFFER[11] = 0xb0;
+	SSP_BUFFER[12] = SSP_PACKET_DATA_12;
+	SSP_BUFFER[13] = SSP_PACKET_DATA_13;
+	SSP_BUFFER[14] = 0x14;
+	ENTRY_DATA_UNK1 = 0x08;
+	SSP_BUFFER[15] = Evelise(SSP_PACKET_DATA_15_PARAM);
+	SSP_BUFFER[16] = Evelise(SSP_PACKET_DATA_16_PARAM);
+	SSP_BUFFER[17] = Evelise(SSP_PACKET_DATA_17_PARAM);
+
+	// Why?
+	SSP_PACKET_DATA_18_TMP = SSP_PACKET_DATA_18;
+	SSP_PACKET_DATA_18_TMP <<= 2;
+	SSP_BUFFER[18] = SSP_PACKET_DATA_18_TMP << 1 | SSP_PACKET_DATA_18_MASK;
+	if (SSP_PACKET_DATA_18_BITCOND & 0x40)
+		SET(SSP_BUFFER[18], 7)
+
+	SSP_BUFFER[19] = SSP_PACKET_DATA_19;
+	SSP_BUFFER[20] = SSP_PACKET_DATA_20;
+
+	// Checksum parameters
+	INIT_ST1_UNK1 = 0x0a; // 10 bytes to checksum
+	INIT_ST1_UNK2 = 0xff; // AND type checksum
+	SSP_BUFFER[21] = PWRB_PACKET_CHECKSUM(0x3c); //this IS NOT THE BUFFER?!?
+
+	// Define SSP packet size
+	SSP_PACKET_SIZE = 0x0b; // 11 bytes with checksum
+
+	// Set flag
+	SET(UART_SSP_PACKET_STATUS, 4);
+
+	// Clear interupt flag
+	CLR(PIR1, 3);
+
+	// Reset TX buffer index
+	SSP_TX_BUFFER_INDEX = 0x00;
+
+	// Ship that montruosity
+	SSPBUF = SSP_BUFFER[11]; // I may have made a mistake with that buffer...
+							 // that was defined based on the interrupt handler
+
+	// Enable SSP interrupts
+	SET(PIE1, 3);
 }
 
 // Simple checksum
