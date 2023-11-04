@@ -6,6 +6,7 @@ char USART_LOGIC_UNK24; // 0x29
 
 char SSP_PACKET_DATA_18; // 0x2d
 
+char MLOGIC_SUB2_UNK3; // 0x31
 char INIT_HW1_UNK8; // 0x32
 char ENTRY_DATA_UNK2; // 0x33
 char INIT_HW1_UNK7; // 0x34

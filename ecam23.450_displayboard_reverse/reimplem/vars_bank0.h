@@ -82,5 +82,7 @@ char ISR_BKP_SHWD5; // 0x76
 char ISR_BKP_WREG; // 0x78
 char ENTRY_SUB2_UNK1; // 0x79
 char EVELISE_UNK1; // 0x7a
+char MLOGIC_SUB2_UNK1; // 0x7b
+char MLOGIC_SUB2_UNK2; // 0x7c
 
 // Ends at 0x7f
