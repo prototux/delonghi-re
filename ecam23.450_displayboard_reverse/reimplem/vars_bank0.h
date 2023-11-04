@@ -1,24 +1,33 @@
 // Starts at 0x20
-
+// 0x20
+// 0x21
+// 0x22
+// 0x23
+// 0x24
+// 0x25
+// 0x26
+// 0x27
+// 0x28
+// 0x29
 char USART_LOGIC_UNK9; // 0x2a
 char USART_LOGIC_UNK10; // 0x2b
 char ENTRY_DATA_UNK3; // 0x2c
 char USART_SSP_PACKET_STATUS; // 0x2d
-
+// 0x2e
 char ENTRY_DATA_UNK1; // 0x2f
-
 char TIMER0_INT_UNK2; // 0x30
-
+// 0x31
 char INIT_HW1_UNK2; // 0x32
 char INIT_HW1_UNK4; // 0x33
 char INIT_HW1_UNK3; // 0x34
 char INIT_HW1_UNK5; // 0x35
 char TIMER1_UNK2; // 0x34
-
+// 0x35
+// 0x36
 char USART_LOGIC_UNK8; // 0x37
 char USART_LOGIC_UNK12; // 0x38
 char USART_LOGIC_UNK11; // 0x39
-
+// 0x3a
 char USART_LOGIC_UNK6; // 0x3b
 char USART_LOGIC_UNK7; // 0x3c
 char TIMER0_INT_UNK3; // 0x3d
