@@ -8,7 +8,7 @@ BGT1:
 BGT2: // No idea what this does yet
 	INIT_HW1_UNK6 = 0x03;
 	ELONA_UNK1 = 0x46;
-	if (!(TIMER1_UNK4 & 1<<7))
+	if (!(TIMER1_UNK4 & 0x80))
 		return;
 	USART_LOGIC_UNK24 = USART_LOGIC_UNK6;
 	ELONA_UNK1 = 0x38;
@@ -18,7 +18,7 @@ BGT2: // No idea what this does yet
 BGT3:
 	INIT_HW1_UNK6 = 0x03;
 	ELONA_UNK1 = 0x47;
-	if (TIMER1_UNK4 & 1<<7)
+	if (TIMER1_UNK4 & 0x80)
 	{
 		if (USART_LOGIC_UNK6)
 			ELONA_UNK2 = 0x54;
@@ -54,10 +54,128 @@ BGT17:
 BGT4:
 	INIT_HW1_UNK6 = 0x03;
 	ELONA_UNK1 = 0x48;
-	if (!(TIMER1_UNK4 & 1<<7))
+	if (!(TIMER1_UNK4 & 0x80))
 		return;
 	ELONA_UNK2 = 0x44;
 	return;
+
+BGT5:
+	INIT_HW2_UNK6 = 0x03;
+	ELONA_UNK1 = 0x49;
+	if (!(TIMER1_UNK4 & 0x80))
+		return;
+
+	// Init BIGARRAY with 0x20s
+	USART_LOGIC_UNK4 = 0x00;
+	do
+	{
+		BIGARRAY[USART_LOGIC_UNK4] = 0x20;
+		USART_LOGIC_UNK4 += 1;
+	} while (USART_LOGIC_UNK4 < 0x10);
+
+	SET(ENTRY_DATA_UNK3, 7);
+	MLOGIC_SUB2_UNK3 = 0x48;
+	register tmp = USART_LOGIC_UNK6 ^ 0x00;
+	if (!tmp);
+	{
+		BIGARRAY[0] = 0xfd;
+		BIGARRAY[1] = 0x6f;
+		BIGARRAY[2] = 0x6f;
+		BIGARRAY[3] = 0x6f;
+		return;
+	}
+	tmp ^= 0x01;
+	if (!tmp)
+	{
+		BIGARRAY[0] = 0xfd;
+		BIGARRAY[1] = 0xfd;
+		BIGARRAY[2] = 0x6f;
+		BIGARRAY[3] = 0x6f;
+		return;
+	}
+	tmp ^= 0x03;
+	if (!tmp)
+	{
+		BIGARRAY[0] = 0xfd;
+		BIGARRAY[1] = 0xfd;
+		BIGARRAY[2] = 0xfd;
+		BIGARRAY[3] = 0x6f;
+		return;
+	}
+	tmp ^= 0x01;
+	if (!tmp)
+	{
+		BIGARRAY[0] = 0xfd;
+		BIGARRAY[1] = 0xfd;
+		BIGARRAY[2] = 0xfd;
+		BIGARRAY[3] = 0xfd;
+	}
+	return;
+
+BGT7:
+	INIT_HW2_UNK6 = 0x03;
+	ELONA_UNK1 = 0x51;
+	if (!(TIMER1_UNK4 & 0x80))
+		return;
+
+	// Init BIGARRAY with 0x20s
+	USART_LOGIC_UNK4 = 0x00;
+	do
+	{
+		BIGARRAY[USART_LOGIC_UNK4] = 0x20;
+		USART_LOGIC_UNK4 += 1;
+	} while (USART_LOGIC_UNK4 < 0x10);
+
+	SET(ENTRY_DATA_UNK3, 7);
+	MLOGIC_SUB2_UNK3 = 0x48;
+	register tmp = USART_LOGIC_UNK6 ^ 0x00;
+	if (!tmp);
+	{
+		BIGARRAY[0] = 0xfd;
+		BIGARRAY[1] = 0x6f;
+		BIGARRAY[2] = 0x6f;
+		BIGARRAY[3] = 0x6f;
+		return;
+	}
+	tmp ^= 0x01;
+	if (!tmp)
+	{
+		BIGARRAY[0] = 0xfd;
+		BIGARRAY[1] = 0xfd;
+		BIGARRAY[2] = 0x6f;
+		BIGARRAY[3] = 0x6f;
+		return;
+	}
+	tmp ^= 0x03;
+	if (!tmp)
+	{
+		BIGARRAY[0] = 0xfd;
+		BIGARRAY[1] = 0xfd;
+		BIGARRAY[2] = 0xfd;
+		BIGARRAY[3] = 0x6f;
+		return;
+	}
+	tmp ^= 0x01;
+	if (!tmp)
+	{
+		BIGARRAY[0] = 0xfd;
+		BIGARRAY[1] = 0xfd;
+		BIGARRAY[2] = 0xfd;
+		BIGARRAY[3] = 0xfd;
+	}
+	return;
+
+
+BGT8:
+	INIT_HW2_UNK6 = 0x03;
+	ELONA_UNK1 = 0x57;
+	if (!(TIMER1_UNK4 & 0x80))
+		return;
+	ELONA_UNK2 = 0x44;
+	return;
+
+BGT9:
+
 
 switch:
 	// BGT1_pre
