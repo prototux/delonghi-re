@@ -4,6 +4,7 @@ char INIT_HW1_UNK6; // 0x20
 
 char USART_LOGIC_UNK24; // 0x29
 
+char MLOGIC_SUB2_UNK6; // 0x2c
 char SSP_PACKET_DATA_18; // 0x2d
 
 char MLOGIC_SUB2_UNK3; // 0x31
@@ -37,6 +38,9 @@ char HW_INIT2_UNK7; // 0x4b
 
 char HW_INIT2_UNK10; // 0x4d
 char USART_LOGIC_UNK26; // 0x4e
+
+char MLOGIC_SUB2_UNK4; // 0x55
+char MLOGIC_SUB2_UNK5; // 0x56
 
 char USART_LOGIC_UNK15; // 0x5b
 char USART_LOGIC_UNK14; // 0x5c

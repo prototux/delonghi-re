@@ -4,6 +4,7 @@ void MAINLOOP_MAIN_LOGIC_SUB2(void)
 	goto switch;
 
 BGT1:
+	// todo
 
 BGT2: // No idea what this does yet
 	INIT_HW1_UNK6 = 0x03;
@@ -50,6 +51,7 @@ BGT3:
 	return;
 
 BGT17:
+	// todo
 
 BGT4:
 	INIT_HW1_UNK6 = 0x03;
@@ -111,6 +113,9 @@ BGT5:
 		BIGARRAY[3] = 0xfd;
 	}
 	return;
+
+BGT6:
+	// todo
 
 BGT7:
 	INIT_HW2_UNK6 = 0x03;
@@ -175,7 +180,215 @@ BGT8:
 	return;
 
 BGT9:
+	INIT_HW2_UNK6 = 0x03;
+	ELONA_UNK1 = 0x58;
+	if (!(TIMER1_UNK4 & 0x80))
+		return;
+	ELONA_UNK2 = 0x44;
+	return;
 
+BGT12:
+	INIT_HW2_UNK6 = 0x03;
+	ELONA_UNK1 = 0x5a;
+	if (!(TIMER1_UNK4 & 0x80))
+		return;
+	ELONA_UNK2 = 0x5c;
+	USART_LOGIC_UNK14 = USART_LOGIC_UNK6;
+	USART_LOGIC_UNK15 = USART_LOGIC_UNK7;
+	MLOGIC_SUB2_UNK4 = USART_LOGIC_UNK15;
+	MLOGIC_SUB2_UNK5 = USART_LOGIC_UNK14;
+	Eliana();
+	SET(MLOGIC_SUB2_UNK6, 7);
+	MLOGIC_SUB2_UNK3 = 0x4f;
+	return;
+
+BGT10:
+	INIT_HW2_UNK6 = 0x03;
+	ELONA_UNK1 = 0x5a;
+	if (!(TIMER1_UNK4 & 0x80))
+		return;
+
+	if ((TIMER1_UNK4 & 0x3f) == 0x1b)
+		ELONA_UNK2 = 0x5b;
+	else if ((TIMER1_UNK4 & 0x3f) == 0x1d)
+		return
+	else
+		ELONA_UNK2 = 0x5e;
+
+	USART_LOGIC_UNK14 = USART_LOGIC_UNK6;
+	USART_LOGIC_UNK15 = USART_LOGIC_UNK7;
+	MLOGIC_SUB2_UNK4 = USART_LOGIC_UNK15;
+	MLOGIC_SUB2_UNK5 = USART_LOGIC_UNK14;
+	Eliana();
+	SET(MLOGIC_SUB2_UNK6, 7);
+	MLOGIC_SUB2_UNK3 = 0x4f;
+	return;
+	// more logic
+	return;
+
+BGT11:
+	INIT_HW2_UNK6 = 0x03;
+	ELONA_UNK1 = 0x5a;
+	if (!(TIMER1_UNK4 & 0x80))
+		return;
+
+	if ((TIMER1_UNK4 & 0x3f) == 0x1b)
+		ELONA_UNK2 = 0x5d;
+	else if ((TIMER1_UNK4 & 0x3f) == 0x1d)
+		return
+	else
+		ELONA_UNK2 = 0x5f;
+
+	USART_LOGIC_UNK14 = USART_LOGIC_UNK6;
+	USART_LOGIC_UNK15 = USART_LOGIC_UNK7;
+	MLOGIC_SUB2_UNK4 = USART_LOGIC_UNK15;
+	MLOGIC_SUB2_UNK5 = USART_LOGIC_UNK14;
+	Eliana();
+	SET(MLOGIC_SUB2_UNK6, 7);
+	MLOGIC_SUB2_UNK3 = 0x4f;
+	return;
+
+BGT13:
+	INIT_HW1_UNK6 = 0x03;
+	ELONA_UNK1 = 0x63;
+	if (TIMER1_UNK4 & 0x80)
+	{
+		if (USART_LOGIC_UNK6)
+			ELONA_UNK2 = 0x54;
+		else
+			ELONA_UNK5 = 0x55;
+		return;
+	}
+
+	// Init BIGARRAY with 0x20s
+	USART_LOGIC_UNK4 = 0x00;
+	do
+	{
+		BIGARRAY[USART_LOGIC_UNK4] = 0x20;
+		USART_LOGIC_UNK4 += 1;
+	}
+	while (USART_LOGIC_UNK4 < 0xa);
+
+	if (TIMER1_UNK2 & 0x80)
+	{
+		BIGARRAY[1] = 0x2a;
+		MLOGIC_SUB2_UNK3 = 0x48;
+	}
+	else
+	{
+		BIGARRAY[1] = 0x20;
+		SET(ENTRY_DATA_UNK3, 7);
+		MLOGIC_SUB2_UNK3 = 0x48;
+	}
+	return;
+
+
+BGT14:
+	INIT_HW1_UNK6 = 0x03;
+	ELONA_UNK1 = 0x59;
+	if (TIMER1_UNK4 & 0x80)
+	{
+		if (USART_LOGIC_UNK6)
+			ELONA_UNK2 = 0x54;
+		else
+			ELONA_UNK5 = 0x55;
+		return;
+	}
+
+	// Init BIGARRAY with 0x20s
+	USART_LOGIC_UNK4 = 0x00;
+	do
+	{
+		BIGARRAY[USART_LOGIC_UNK4] = 0x20;
+		USART_LOGIC_UNK4 += 1;
+	}
+	while (USART_LOGIC_UNK4 < 0xa);
+
+	if (TIMER1_UNK2 & 0x04)
+	{
+		BIGARRAY[1] = 0x2a;
+		MLOGIC_SUB2_UNK3 = 0x48;
+	}
+	else
+	{
+		BIGARRAY[1] = 0x20;
+		SET(ENTRY_DATA_UNK3, 7);
+		MLOGIC_SUB2_UNK3 = 0x48;
+	}
+	return;
+
+BGT16:
+	INIT_HW1_UNK6 = 0x03;
+	ELONA_UNK1 = 0x37;
+	if (TIMER1_UNK4 & 0x80)
+	{
+		if (USART_LOGIC_UNK6)
+			ELONA_UNK2 = 0x54;
+		else
+			ELONA_UNK5 = 0x55;
+		return;
+	}
+
+	// Init BIGARRAY with 0x20s
+	USART_LOGIC_UNK4 = 0x00;
+	do
+	{
+		BIGARRAY[USART_LOGIC_UNK4] = 0x20;
+		USART_LOGIC_UNK4 += 1;
+	}
+	while (USART_LOGIC_UNK4 < 0xa);
+
+	if (TIMER1_UNK2 & 0x08)
+	{
+		BIGARRAY[1] = 0x2a;
+		MLOGIC_SUB2_UNK3 = 0x48;
+	}
+	else
+	{
+		BIGARRAY[1] = 0x20;
+		SET(ENTRY_DATA_UNK3, 7);
+		MLOGIC_SUB2_UNK3 = 0x48;
+	}
+	return;
+
+BGT_15:
+	INIT_HW1_UNK6 = 0x03;
+	ELONA_UNK1 = 0x53;
+	if (TIMER1_UNK4 & 0x80)
+	{
+		if (USART_LOGIC_UNK6)
+			ELONA_UNK2 = 0x54;
+		else
+			ELONA_UNK5 = 0x55;
+		return;
+	}
+
+	// Init BIGARRAY with 0x20s
+	USART_LOGIC_UNK4 = 0x00;
+	do
+	{
+		BIGARRAY[USART_LOGIC_UNK4] = 0x20;
+		USART_LOGIC_UNK4 += 1;
+	}
+	while (USART_LOGIC_UNK4 < 0xa);
+
+	if (TIMER1_UNK2 & 0x10)
+	{
+		BIGARRAY[1] = 0x2a;
+		MLOGIC_SUB2_UNK3 = 0x48;
+	}
+	else
+	{
+		BIGARRAY[1] = 0x20;
+		SET(ENTRY_DATA_UNK3, 7);
+		MLOGIC_SUB2_UNK3 = 0x48;
+	}
+	return;
+
+
+/*******************************/
+/* Return to "normal" function */
+/******************************/
 
 switch:
 	// BGT1_pre
