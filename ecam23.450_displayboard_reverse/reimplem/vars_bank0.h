@@ -31,12 +31,18 @@ char SSP_PACKET_SIZE; // 0x41
 char SSP_UNK2; // 0x44
 char TIMER0_INT_UNK1; // 0x45
 
+char USART_LOGIC_UNK30; // 0x4a
+
 char USART_LOGIC_UNK2; // 0x4c
 char USART_LOGIC_UNK4; // 0x4d
 char USART_LOGIC_UNK5; // 0x4e
 
 char CHECKSUM_UNK1; // 0x55
 char CHECKSUM_UNK2; // 0x56
+
+char USART_LOGIC_UNK27; // 0x5c
+char USART_LOGIC_UNK28; // 0x5d
+char USART_LOGIC_UNK29; // 0x5e
 
 char USART_RX_RCVD_BYTE; // 0x65
 

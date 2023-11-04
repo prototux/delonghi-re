@@ -35,6 +35,7 @@ char USART_LOGIC_UNK25; // 0x4a
 char HW_INIT2_UNK7; // 0x4b
 
 char HW_INIT2_UNK10; // 0x4d
+char USART_LOGIC_UNK26; // 0x4e
 
 char USART_LOGIC_UNK15; // 0x5b
 char USART_LOGIC_UNK14; // 0x5c
