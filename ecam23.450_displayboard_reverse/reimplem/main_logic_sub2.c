@@ -4,7 +4,80 @@ void MAINLOOP_MAIN_LOGIC_SUB2(void)
 	goto switch;
 
 BGT1:
-	// todo
+	INIT_HW1_UNK6 = 0x03;
+	ELONA_UNK1 = 0x45;
+	if (TIMER1_UNK4 & 0x80)
+	{
+		USART_LOGIC_UNK4 = 0x00;
+		// Init BIGARRAY with 0x20s
+		USART_LOGIC_UNK4 = 0x00;
+		do
+		{
+			BIGARRAY[USART_LOGIC_UNK4] = 0x20;
+			USART_LOGIC_UNK4 += 1;
+		}
+		while (USART_LOGIC_UNK4 < 0xa);
+
+		MLOGIC_SUB_UNK3 = 0x40;
+		SET(TIMER0_INT_UNK2, 6);
+		SET(TIMER0_INT_UNK2, 7);
+		return;
+	}
+	else
+	{
+		SSP_PACKET_DATA_15_PARAM = USART_LOGIC_UNK6 & 0x7f;
+		SSP_PACKET_DATA_16_PARAM = USART_LOGIC_UNK7 & 0x7f;
+		SSP_PACKET_DATA_17_PARAM = 0x00;
+		USART_LOGIC_UNK7 = USART_LOGIC_UNK6 & 0x7f;
+		MLOGIC_SUB2_UNK6 = USART_LOGIC_UNK7 & 0x7f;
+		if (!(USART_LOGIC_UNK6 & 0x80))
+		{
+			if (!(TIMER0_INT_UNK2 & 0x80))
+			{
+				SET(TIMER0_INT_UNK2, 4);
+				CLR(TIMER0_INT_UNK2, 7);
+			}
+
+			if (!(TIMER0_INT_UNK2 & 0x40))
+				MAINLOOP_MAIN_LOGIC(0x02);
+			else
+				MAINLOOP_MAIN_LOGIC(0x04);
+
+		}
+		else
+		{
+			if (TIMER0_INT_UNK2, 0x40)
+			{
+				SET(TIMER0_INT_UNK2, 4);
+				CLR(TIMER0_INT_UNK2, 6);
+			}
+
+			if (TIMER0_INT_UNK2 & 0x20)
+				MAINLOOP_MAIN_LOGIC_SUB1(0x03);
+			else
+				MAINLOOP_MAIN_LOGIC_SUB1(0x04);
+
+			if (SSP_PACKET_UNK1 & 0x80)
+			{
+				if (SSP_PACKET_DATA_18 != 0x01)
+				{
+					SET(SSP_PACKET_DATA_18_BITCOND, 6);
+					PACKET_BUFFER[2] = SSP_PACKET_DATA_15_PARAM;
+					PACKET_BUFFER[1] = SSP_PACKET_DATA_16_PARAM;
+					PACKET_BUFFER[0] = SSP_PACKET_DATA_17_PARAM;
+					PACKET_BUFFER[7] = 0x00;
+					SSP_PACKET_DATA_12 = 0x00;
+					SSP_PACKET_DATA_18_MASK = 0x00;
+					SSP_PACKET_DATA_18_TMP = 0xd0;
+					Cecile();
+				}
+			}
+		}
+
+		SET(ENTRY_DATA_UNK3, 7);
+		MLOGIC_SUB2_UNK3 = 0x40;
+		return;
+	}
 
 BGT2: // No idea what this does yet
 	INIT_HW1_UNK6 = 0x03;
@@ -51,7 +124,49 @@ BGT3:
 	return;
 
 BGT17:
-	// todo
+	INIT_HW2_UNK6 = 0x03;
+	ELONA_UNK1 = 0x47;
+	if (!(TIMER1_UNK4 & 0x80))
+		return;
+
+	MLOGIC_SUB2_UNK6 = USART_LOGIC_UNK6 ^ 0x7f;
+
+	if (USART_LOGIC_UNK6 & 0x80)
+	{
+		if (TIMER0_INT_UNK2 & 0x40)
+		{
+			SET(TIMER0_INT_UNK2, 4);
+			CLR(TIMER0_INT_UNK2, 7);
+
+			if (TIMER0_INT_UNK2 & 0x10)
+				MAINLOOP_MAIN_LOGIC_SUB1(0x02);
+			else
+				MAINLOOP_MAIN_LOGIC_SUB1(0x04);
+		}
+		else
+		{
+			if (TIMER0_INT_UNK2 & 0x20)
+				MAINLOOP_MAIN_LOGIC_SUB1(0x03);
+			else
+				MAINLOOP_MAIN_LOGIC_SUB1(0x04);
+		}
+	}
+	else
+	{
+		if (TIMER0_INT_UNK2 & 0x80)
+		{
+			SET(TIMER0_INT_UNK2, 4);
+			CLR(TIMER0_INT_UNK2, 8);
+		}
+		else if (TIMER0_INT_UNK2 & 0x20)
+			MAINLOOP_MAIN_LOGIC_SUB1(0x02);
+		else
+			MAINLOOP_MAIN_LOGIC_SUB1(0x04);
+	}
+
+	SET(ENTRY_DATA_UNK2, 7);
+	MLOGIC_SUB2_UNK3 = 0x40;
+	return;
 
 BGT4:
 	INIT_HW1_UNK6 = 0x03;

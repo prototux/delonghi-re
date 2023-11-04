@@ -1,6 +1,7 @@
 // Starts at 0x20
 
 char INIT_HW1_UNK6; // 0x20
+char MLOGIC_SUB2_UNK7; // 0x22
 
 char USART_LOGIC_UNK24; // 0x29
 
