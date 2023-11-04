@@ -115,7 +115,55 @@ BGT5:
 	return;
 
 BGT6:
-	// todo
+	INIT_HW2_UNK6 = 0x03;
+	ELONA_UNK1 = 0x4d;
+	if (!(TIMER1_UNK4 & 0x80))
+		return;
+
+	register tmp = USART_LOGIC_UNK6 ^ 0x00;
+	if (!tmp);
+	{
+		USART_LOGIC_UNK5 = 0x31;
+		Eva(40);
+		USART_LOGIC_UNK5 = 0x35;
+		Eva(41);
+		ELONA_UNK2 = 0x00;
+		return;
+	}
+	tmp ^= 0x01;
+	if (!tmp)
+	{
+		USART_LOGIC_UNK5 = 0x33;
+		Eva(40);
+		USART_LOGIC_UNK5 = 0x30;
+		Eva(41);
+		ELONA_UNK2 = 0x00;
+		return;
+	}
+	tmp ^= 0x03;
+	if (!tmp)
+	{
+		USART_LOGIC_UNK5 = 0x31;
+		Eva(40);
+		ELONA_UNK2 = 0x4e;
+		return;
+	}
+	tmp ^= 0x01;
+	if (!tmp)
+	{
+		USART_LOGIC_UNK5 = 0x32;
+		Eva(40);
+		ELONA_UNK2 = 0x4f;
+		return;
+	}
+	tmp ^= 0x07;
+	if (!tmp)
+	{
+		USART_LOGIC_UNK5 = 0x33;
+		Eva(40);
+		ELONA_UNK2 = 0x4f
+	}
+	return;
 
 BGT7:
 	INIT_HW2_UNK6 = 0x03;
@@ -222,8 +270,6 @@ BGT10:
 	Eliana();
 	SET(MLOGIC_SUB2_UNK6, 7);
 	MLOGIC_SUB2_UNK3 = 0x4f;
-	return;
-	// more logic
 	return;
 
 BGT11:
