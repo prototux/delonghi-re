@@ -1,0 +1,266 @@
+digraph G {
+  // Concepts
+  shdw_mem [shape=Mdiamond];
+  SUB2_UNK1 [shape=Mdiamond];
+
+  // Board features
+  USART [shape=Square];
+  SSP [shape=Square];
+  powerboard [shape=Msquare];
+  OK_ESC_LED [shape=Square]
+  buzzer [shape=Square];
+  softi2c [shape=Square];
+  buttons [shape=Square];
+  selector [shape=Square];
+  cup_LED [shape=Square];
+  LCD_backlight [shape=Square];
+
+  USART -> powerboard;
+  SSP -> powerboard;
+
+  // Start
+  hw [shape=Diamond];
+
+  // Entrypoints
+  hw -> _reset;
+  hw -> _interrupt
+
+  // _reset
+  _reset -> main;
+
+  // main
+  main -> memclear;
+  main -> init_ram_with_data;
+  main -> delay_2ms;
+  main -> init_hardware_1;
+  main -> LCD_backlight;
+  main -> init_hardware_2;
+  main -> init_something_2;
+  main -> Emy;
+  main -> Eleonore;
+  main -> MAINLOOP_SUB1;
+  main -> MAINLOOP_SUB2;
+  main -> MAINLOOP_SUB3;
+  main -> USART_MAYBE_LOGIC;
+  main -> Coralie;
+  main -> MAINLOOP_MAIN_LOGIC;
+
+  // _interrupt
+  _interrupt -> interrupt_handler_ssp;
+  _interrupt -> interrupt_handler_timer0;
+  _interrupt -> interrupt_handler_timer1;
+  _interrupt -> interrupt_handler_usart_rx;
+  _interrupt -> interrupt_handler_usart_tx;
+
+  // interrupt_handler_timer0
+  interrupt_handler_timer0 -> buzzer;
+  interrupt_handler_timer0 -> OK_ESC_LED;
+  interrupt_handler_timer0 -> SSP;
+
+  // interrupt_handler_ssp
+  interrupt_handler_ssp -> SSP;
+  // interrupt_handler_usart_rx
+  interrupt_handler_usart_rx -> USART;
+  // interrupt_handler_usart_tx
+  interrupt_handler_usart_tx -> USART;
+
+  // init_ram_with_data
+  init_ram_with_data -> SUB2_UNK1;
+  init_ram_with_data -> fetch_data;
+
+  // init_something_2
+  init_something_2 -> Caroline;
+  init_something_2 -> Eloise;
+  init_something_2 -> Cecile;
+
+  // Caroline
+  Caroline -> shdw_mem;
+  Caroline -> SUB2_UNK1;
+  Caroline -> Aline;
+  Caroline -> Alice;
+  Caroline -> Elsa;
+  Caroline -> Agathe;
+  Caroline -> Anais;
+
+  // Eloise
+  Eloise -> Evelise;
+
+  // Cecile
+  Cecile -> shdw_mem;
+  Cecile -> Aline;
+  Cecile -> Agathe;
+  Cecile -> Alice;
+  Cecile -> Anais;
+
+  // Aline
+  Aline -> softi2c;
+  Aline -> Anais;
+
+  // Alice
+  Alice -> softi2c;
+  Alice -> Anais;
+
+  // Elsa
+  Elsa -> softi2c;
+  Elsa -> Anais;
+
+  // Agathe
+  Agathe -> softi2c;
+  Agathe -> Anais;
+
+  // Anais
+  // Seems to wait for x cpu cycles
+
+  // Adele
+  Adele -> Aline;
+  Adele -> Alice;
+  Adele -> Agathe;
+
+  // Evelise
+  Evelise -> Eloane;
+  Evelise -> shdw_mem;
+
+  // Eloane
+  // Doesn't call anything
+
+  // Adele
+  Adele -> Alice;
+  Adele -> Agathe;
+
+  // Eleonore
+  Eleonore -> softi2c;
+  Eleonore -> Anais;
+  Eleonore -> Agathe;
+  Eleonore -> Caroline;
+
+  // Emy
+  Emy -> softi2c;
+  Emy -> delay_2ms;
+  Emy -> fetch_data_withparam;
+  Emy -> Adele;
+
+  // Eliana
+  Eliana -> Elise;
+
+  // Elise
+  Elise -> shdw_mem;
+
+  // Eloane
+  Eloane -> SUB2_UNK1;
+
+  // Elodie
+  Elodie -> SUB2_UNK1;
+  Elodie -> Clara;
+  Elodie -> Emilie;
+  Elodie -> Adele;
+
+  // Elona
+  // Doesn't touch anything but data in ram
+
+  // Emilie
+  Emilie -> shdw_mem;
+  Emilie -> SUB2_UNK1;
+  Emilie -> Estelle;
+  Emilie -> Caroline;
+  Emilie -> fetch_data;
+  Emilie -> fetch_data_withparam;
+
+  // Emma
+  Emma -> SUB2_UNK1;
+  Emma -> Adele;
+
+  // Estelle
+  Estelle -> shdw_mem;
+  Estelle -> SUB2_UNK1;
+
+  // Eva
+  Eva -> Adele;
+
+  // Clara
+  Clara -> shdw_mem;
+  Clara -> SUB2_UNK1;
+  Clara -> Caroline;
+
+  // Clemence
+  Clemence -> shdw_mem;
+  Clemence -> SUB2_UNK1;
+  Clemence -> Aline;
+  Clemence -> Alice;
+  Clemence -> Elsa;
+  Clemence -> Agathe;
+  Clemence -> Anais;
+
+  // Coralie
+  Coralie -> POWERBOARD_COM_INIT;
+  Coralie -> Caroline;
+  Coralie -> Eloise;
+  Coralie -> Evelise;
+  Coralie -> Cecile;
+
+  // MAINLOOP_MAIN_LOGIC
+  MAINLOOP_MAIN_LOGIC -> shdw_mem;
+  MAINLOOP_MAIN_LOGIC -> MAINLOOP_MAIN_LOGIC_SUB1; // BGT1
+  MAINLOOP_MAIN_LOGIC -> MAINLOOP_MAIN_LOGIC_SUB2; // BGT13
+  MAINLOOP_MAIN_LOGIC -> Elona; // BGT1,2,3,5,6,7,8,9,10,11
+  MAINLOOP_MAIN_LOGIC -> Elodie; // at return/BGT4
+  MAINLOOP_MAIN_LOGIC -> Emma; // at return/BGT4
+  MAINLOOP_MAIN_LOGIC -> Emy; // at return/BGT4
+
+  // MAINLOOP_MAIN_LOGIC_SUB1
+  // Only accesses data
+
+  // MAINLOOP_MAIN_LOGIC_SUB2
+  MAINLOOP_MAIN_LOGIC_SUB2 -> MAINLOOP_MAIN_LOGIC_SUB1;
+                                // BGT1,17
+  MAINLOOP_MAIN_LOGIC_SUB2 -> Cecile; //BGT1
+  MAINLOOP_MAIN_LOGIC_SUB2 -> Eva; // BGT3,6
+  MAINLOOP_MAIN_LOGIC_SUB2 -> Eliana; // BGT11
+
+  // MAINLOOP_SUB1
+  // Accesses timer1 and data
+  // Seems to touch SSP TX
+
+  // MAINLOOP_SUB2
+  MAINLOOP_SUB2 -> buttons;
+  MAINLOOP_SUB2 -> selector;
+
+  // MAINLOOP_SUB3
+  MAINLOOP_SUB3 -> selector;
+
+  // POWERBOARD_COM_INIT
+  POWERBOARD_COM_INIT -> USART;
+  POWERBOARD_COM_INIT -> SSP;
+
+  // USART_MAYBE_LOGIC
+  USART_MAYBE_LOGIC -> cup_LED;
+  USART_MAYBE_LOGIC -> POWERBOARD_COM_INIT
+  USART_MAYBE_LOGIC -> SSP_SEND_PACKET
+  USART_MAYBE_LOGIC -> USART_MAYBE_CHECKSUM
+  USART_MAYBE_LOGIC -> USART_PACKET_SEND_1
+  USART_MAYBE_LOGIC -> USART_PACKET_SEND_2
+  USART_MAYBE_LOGIC -> USART_PACKET_SEND_3
+  USART_MAYBE_LOGIC -> Cecile;
+  USART_MAYBE_LOGIC -> Caroline;
+  USART_MAYBE_LOGIC -> Clemence;
+
+  // USART_MAYBE_CHECKSUM
+  // Only computes checksum
+
+  // SSP_SEND_PACKET
+  SSP_SEND_PACKET -> Evelise;
+  SSP_SEND_PACKET -> USART_MAYBE_CHECKSUM;
+  SSP_SEND_PACKET -> SSP;
+
+  // USART_PACKET_SEND_1
+  USART_PACKET_SEND_1 -> USART_MAYBE_CHECKSUM;
+  USART_PACKET_SEND_1 -> USART;
+  // USART_PACKET_SEND_2
+  USART_PACKET_SEND_2 -> USART_MAYBE_CHECKSUM;
+  USART_PACKET_SEND_2 -> USART;
+  // USART_PACKET_SEND_3
+  USART_PACKET_SEND_3 -> USART_MAYBE_CHECKSUM;
+  USART_PACKET_SEND_3 -> USART;
+
+  // fetch_data_withparam;
+  fetch_data_withparam -> fetch_data;
+}
