@@ -1,0 +1,12 @@
+# Arrays in the firmware
+
+IRP	ADDR LEN	NAME					Access
+yes	0x27								MAIN_LOGIC_SUB2/BGT1,3,5,7,13,14,16,15, Emma,
+												MAIN_LOGIC/BGT14,18,4-ret, MLOGIC_SUB1, Eliana,
+yes	0x47 		PACKET_BUFFER			Clara, Emilie, Caroline, Cecile, USART_PACKET_SEND3, USART_LOGIC
+yes	0x57		USART_PACKET_BUFFER		isr_tx, isr_rx, USART_PACKET_SEND1,2,3, USART_LOGIC,
+yes	0x91								Emma
+yes	0x9b								Emilie, Elodie
+yes	0xaf								Clara, Emilie
+yes	0x3c		SUB_SSP_BUFFER			isr_timer0
+yes	0x31		SSP_BUFFER				isr_ssp

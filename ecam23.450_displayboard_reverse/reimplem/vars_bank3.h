@@ -2,6 +2,10 @@
 
 char ENTRY_DATA_UNK4; // 0x10
 
+// array at 0x12
+// array at 0x1c
+// array at 0x30
+
 
 // Shadow at 0x70
 // Ends at 0x7f

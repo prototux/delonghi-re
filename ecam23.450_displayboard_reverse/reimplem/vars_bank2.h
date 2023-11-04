@@ -6,7 +6,7 @@ char SELECTOR_UNK2; // 0x24
 
 char SELECTOR_UNK1; // 0x25
 char TIMER0_INT_UNK4; // 0x26
-
+// array at 0x27-0x31
 char SSP_BUFFER[22]; // 0x31 to 0x46
 char PACKET_BUFFER[16]; // 0x47 to 0x56
 char USART_PACKET_BUFFER[23]; // 0x57 to 0x67
