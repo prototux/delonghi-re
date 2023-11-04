@@ -1,5 +1,7 @@
 // Starts at 0x20
 
+char USART_LOGIC_UNK9; // 0x2a
+char USART_LOGIC_UNK10; // 0x2b
 char ENTRY_DATA_UNK3; // 0x2c
 char USART_SSP_PACKET_STATUS; // 0x2d
 
@@ -13,6 +15,12 @@ char INIT_HW1_UNK3; // 0x34
 char INIT_HW1_UNK5; // 0x35
 char TIMER1_UNK2; // 0x34
 
+char USART_LOGIC_UNK8; // 0x37
+char USART_LOGIC_UNK12; // 0x38
+char USART_LOGIC_UNK11; // 0x39
+
+char USART_LOGIC_UNK6; // 0x3b
+char USART_LOGIC_UNK7; // 0x3c
 char TIMER0_INT_UNK3; // 0x3d
 char SSP_PACKET_UNK1; // 0x3e
 char INIT_HW1_UNK1; // 0x3f
@@ -22,6 +30,13 @@ char SSP_PACKET_SIZE; // 0x41
 
 char SSP_UNK2; // 0x44
 char TIMER0_INT_UNK1; // 0x45
+
+char USART_LOGIC_UNK2; // 0x4c
+char USART_LOGIC_UNK4; // 0x4d
+char USART_LOGIC_UNK5; // 0x4e
+
+char CHECKSUM_UNK1; // 0x55
+char CHECKSUM_UNK2; // 0x56
 
 char USART_RX_RCVD_BYTE; // 0x65
 
