@@ -8,7 +8,7 @@ DONE	Anais
 ----	Caroline
 ----	Cecile
 ----	Clara
-----	Clemence
+DONE	Clemence
 ----	Coralie
 DONE	deadcode_1
 DONE	deadcode_2

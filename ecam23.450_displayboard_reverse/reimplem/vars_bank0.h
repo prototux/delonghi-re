@@ -59,6 +59,8 @@ char USART_LOGIC_UNK27; // 0x5c
 char USART_LOGIC_UNK28; // 0x5d
 char USART_LOGIC_UNK29; // 0x5e
 char CAROLINE_UNK1; // 0x5f
+char CAROLINE_UNK2; // 0x60
+char CAROLINE_UNK3; // 0x61
 
 char USART_RX_RCVD_BYTE; // 0x65
 
