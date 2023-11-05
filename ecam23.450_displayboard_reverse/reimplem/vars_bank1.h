@@ -3,6 +3,8 @@
 char INIT_HW1_UNK6; // 0x20
 char MLOGIC_SUB2_UNK7; // 0x22
 
+char CLEMENCE_UNK1; // 0x24
+
 char USART_LOGIC_UNK24; // 0x29
 
 char MLOGIC_SUB2_UNK6; // 0x2c
@@ -42,7 +44,8 @@ char USART_LOGIC_UNK26; // 0x4e
 
 char MLOGIC_SUB2_UNK4; // 0x55
 char MLOGIC_SUB2_UNK5; // 0x56
-
+char CLEMENCE_UNK1; // 0x57
+char CLEMENCE_UNK2; // 0x58
 char ELEONORE_UNK1; // 0x59
 char ELEONORE_UNK2; // 0x5a
 char USART_LOGIC_UNK15; // 0x5b
