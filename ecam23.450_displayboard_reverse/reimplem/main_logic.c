@@ -272,7 +272,7 @@ ML_18:
 	tmp ^= 0x01;
 	if (!tmp)
 	{
-		BIGARRAY[1] = 0x20;
+		BIGARRAY[1] = 0x2a;
 		SET(ENTRY_DATA_UNK3, 7);
 		LOGIC_SUB2_UNK3 = 0x48;
 		goto main_logic_ret;
@@ -281,15 +281,19 @@ ML_18:
 	tmp ^= 0x03;
 	if (!tmp)
 	{
-		INIT_HW1_UNK6 = 0x00;
-		ELONA_UNK1 = 0xc8;
-		ELONA_UNK2 = 0xc8;
+		BIGARRAY[1] = 0x20;
+		SET(ENTRY_DATA_UNK3, 7);
+		LOGIC_SUB2_UNK3 = 0x48;
 		goto main_logic_ret;
 	}
 
 	tmp ^= 0x01;
 	if (!tmp)
 	{
+		INIT_HW1_UNK6 = 0x00;
+		ELONA_UNK1 = 0xc8;
+		ELONA_UNK2 = 0xc8;
+		goto main_logic_ret;
 	}
 
 	goto main_logic_ret;
