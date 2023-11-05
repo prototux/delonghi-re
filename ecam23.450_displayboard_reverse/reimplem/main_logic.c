@@ -129,6 +129,123 @@ ML_17:
 	goto main_logic_ret;
 
 ML_16:
+	CLR(ENTRY_DATA_UNK4, 4);
+
+	tmp = USART_LOGIC_UNK7;
+
+	tmp ^= 0x0;
+	if (!tmp)
+	{
+		INIT_HW1_UNK6 = 0x00;
+
+		if (!(USART_LOGIC_UNK7 & 0x02))
+			goto main_logic_ret;
+
+		ELONA_UNK1 = 0xdb;
+		ELONA_UNK2 = 0xdb;
+		goto main_logic_ret;
+	}
+	tmp ^= 0x1;
+	if (!tmp)
+	{
+		INIT_HW1_UNK6 = 0x01;
+
+		if (!(USART_LOGIC_UNK7 & 0x02))
+			goto main_logic_ret;
+
+		ELONA_UNK1 = 0xdb;
+		ELONA_UNK2 = 0xdb;
+		goto main_logic_ret;
+	}
+	tmp ^= 0x3;
+	if (!tmp)
+	{
+		INIT_HW1_UNK6 = 0x02;
+
+		if (!(USART_LOGIC_UNK7 & 0x02))
+			goto main_logic_ret;
+
+		ELONA_UNK1 = 0xdb;
+		ELONA_UNK2 = 0xdb;
+		goto main_logic_ret;
+
+	}
+	tmp ^= 0x1;
+	if (!tmp)
+	{
+		INIT_HW1_UNK6 = 0x00;
+
+		SET(ENTRY_DATA_UNK4, 4);
+
+		if (!(USART_LOGIC_UNK7 & 0x02))
+			goto main_logic_ret;
+
+		ELONA_UNK1 = 0xdb;
+		ELONA_UNK2 = 0xdb;
+		goto main_logic_ret;
+	}
+	tmp ^= 0x7;
+	if (!tmp)
+	{
+		CLR(PORTA, 7); // turn off the cup light
+
+		CLR(ENTRY_DATA_UNK4, 4);
+
+		if (!(USART_LOGIC_UNK7 & 0x02))
+			goto main_logic_ret;
+
+		ELONA_UNK1 = 0xdb;
+		ELONA_UNK2 = 0xdb;
+		goto main_logic_ret;
+	}
+	tmp ^= 0x1;
+	if (!tmp)
+	{
+		SET(ENTRY_DATA_UNK4, 4);
+		ELONA_UNK1 = 0xdd;
+		ELONA_UNK2 = 0xdd;
+
+		if (!(USART_LOGIC_UNK7 & 0x02))
+			goto main_logic_ret;
+
+		ELONA_UNK1 = 0xdb;
+		ELONA_UNK2 = 0xdb;
+		goto main_logic_ret;
+	}
+	tmp ^= 0x3;
+	if (!tmp)
+	{
+		SET(ENTRY_DATA_UNK4, 4);
+		ELONA_UNK1 = 0xdc;
+		ELONA_UNK2 = 0xdc;
+
+		if (!(USART_LOGIC_UNK7 & 0x02))
+			goto main_logic_ret;
+
+		ELONA_UNK1 = 0xdb;
+		ELONA_UNK2 = 0xdb;
+		goto main_logic_ret;
+	}
+	tmp ^= 0xf9;
+	if (!tmp)
+	{
+		INIT_HW1_UNK6 = 0xff;
+		SET(ENTRY_DATA_UNK4, 4);
+
+		if (!(USART_LOGIC_UNK7 & 0x02))
+			goto main_logic_ret;
+
+		ELONA_UNK1 = 0xdb;
+		ELONA_UNK2 = 0xdb;
+		goto main_logic_ret;
+	}
+
+	if (!(USART_LOGIC_UNK7 & 0x02))
+		goto main_logic_ret;
+
+	ELONA_UNK1 = 0xdb;
+	ELONA_UNK2 = 0xdb;
+	goto main_logic_ret;
 
 ML_18:
 	ELONA_UNK1 = 0xda;
