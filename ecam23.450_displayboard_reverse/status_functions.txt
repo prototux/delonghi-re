@@ -5,7 +5,7 @@ DONE	Agathe
 DONE	Alice
 DONE	Aline
 DONE	Anais
-----	Caroline
+DONE	Caroline
 ----	Cecile
 ----	Clara
 DONE	Clemence
