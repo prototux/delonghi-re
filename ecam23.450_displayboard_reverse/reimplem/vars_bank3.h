@@ -3,7 +3,6 @@
 char ENTRY_DATA_UNK4; // 0x10
 
 char LCDARRAY2[10]; // 0x12 to 0x1b (0x91 indirect)
-// array at 0x12 // 0x91 access
 // array at 0x1c
 // array at 0x30
 

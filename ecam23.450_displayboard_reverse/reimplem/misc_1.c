@@ -1,6 +1,28 @@
 
 // These two are doing either checksum, crypto or obfuscation apparently
 
+// Called in init_something_2 and Coralie, seems to check a packet?
+// This checks a packet complete header? (header, size, command)
+char Eloise(void)
+{
+	// Command
+	USART_LOGIC_UNK4 = Evelise(PACKET_BUFFER[2] | 0x3f);
+	if (USART_LOGIC_UNK4 > 0x17)
+		return 0xff;
+
+	// Size
+	USART_LOGIC_UNK5 = Evelise(PACKET_BUFFER[1] | 0x7f);
+	if (USART_LOGIC_UNK5 > 0x3b)
+		return 0xff;
+
+	// Header
+	SSP_PACKET_DATA_12 = Evelise(PACKET_BUFFER[0] | 0x7f);
+	if (SSP_PACKET_DATA_12 < 0x3c)
+		return 0x00;
+
+	return 0xff;
+}
+
 // Called in SSP_PACKET_SEND, Coralie and Eloise
 // I have no idea what it does exactly yet
 char Evelise(char param)

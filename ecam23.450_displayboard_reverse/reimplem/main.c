@@ -67,6 +67,7 @@ void main(void)
 	init_something_2(); // This is probably power board communication
 
 	// This is more init functions
+	// Apparently, init LCD and init I2C devices
 	Emy(0x00); // Emy(0xff) is also called in MAINLOOP_MAIN_LOGIC
 	Eleonore(); // Eleonore is never called again, seems to init the softI2C
 
