@@ -23,9 +23,9 @@ DONE	Eloane
 ----	Elona
 ----	Elsa
 ----	Emilie
-----	Emma
-----	Emy
-----	Estelle
+DONE	Emma
+DONE	Emy
+DONE	Estelle
 DONE	Eva
 DONE	Evelise
 DONE	fetch_data

@@ -84,5 +84,7 @@ char ENTRY_SUB2_UNK1; // 0x79
 char EVELISE_UNK1; // 0x7a
 char MLOGIC_SUB2_UNK1; // 0x7b
 char MLOGIC_SUB2_UNK2; // 0x7c
+char ESTELLE_UNK1; // 0x7d;
+char ESTELLE_UNK2; // 0x7e
 
 // Ends at 0x7f
