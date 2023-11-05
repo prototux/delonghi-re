@@ -123,6 +123,28 @@ ML_13: // This only calls SUB2
 ML_14:
 
 ML_15:
+	if ((TIMER1_UNK5 & 0xde) == CECILE_UNK1)
+	{
+		ENTRY_DATA_UNK2 = 0x32;
+		CECILE_UNK1 = TIMER1_UNK5 | 0xds;
+	}
+
+	if (USART_LOGIC_UNK7)
+	{
+		if (USART_LOGIC_UNK6 > 0x03)
+		{
+			ELONA_UNK1 = 0xcb;
+			goto main_logic_ret;
+		}
+		else
+		{
+			ELONA_UNK1 = 0xcb;
+			ELONA_UNK2 = 0xcb;
+			goto main_logic_ret;
+		}
+	}
+
+	// todo: finish that
 
 ML_17:
 	ELONA_UNK1 = 0xd1;
