@@ -125,10 +125,57 @@ ML_14:
 ML_15:
 
 ML_17:
+	ELONA_UNK1 = 0xd1;
+	goto main_logic_ret;
 
 ML_16:
 
 ML_18:
+	ELONA_UNK1 = 0xda;
+	INIT_HW1_UNK6 |= 0x03;
+
+	USART_PACKET_CHECKSUM = 0x00;
+	do
+	{
+		BIGARRAY[USART_PACKET_CHECKSUM] = 0x20;
+	} while (USART_PACKET_CHECKSUM < 0x0a);
+
+	tmp = USART_LOGIC_UNK6 ^ 0x00;
+	if (!tmp)
+	{
+		if (!TIMER2_UNK2 & 0x10)
+			goto main_logic_ret;
+
+		BIGARRAY[1] = 0x2a;
+		SET(ENTRY_DATA_UNK3, 7);
+		MLOGIC_SUB2_UNK3 = 0x48;
+		goto main_logic_ret;
+	}
+
+	tmp ^= 0x01;
+	if (!tmp)
+	{
+		BIGARRAY[1] = 0x20;
+		SET(ENTRY_DATA_UNK3, 7);
+		LOGIC_SUB2_UNK3 = 0x48;
+		goto main_logic_ret;
+	}
+
+	tmp ^= 0x03;
+	if (!tmp)
+	{
+		INIT_HW1_UNK6 = 0x00;
+		ELONA_UNK1 = 0xc8;
+		ELONA_UNK2 = 0xc8;
+		goto main_logic_ret;
+	}
+
+	tmp ^= 0x01;
+	if (!tmp)
+	{
+	}
+
+	goto main_logic_ret;
 
 
 	// Goto table here
