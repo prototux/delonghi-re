@@ -126,25 +126,140 @@ ML_15:
 	if ((TIMER1_UNK5 & 0xde) == CECILE_UNK1)
 	{
 		ENTRY_DATA_UNK2 = 0x32;
-		CECILE_UNK1 = TIMER1_UNK5 | 0xds;
+		CECILE_UNK1 = TIMER1_UNK5 | 0xde;
 	}
 
 	if (USART_LOGIC_UNK7)
 	{
-		if (USART_LOGIC_UNK6 > 0x03)
+		ELONA_UNK1 = USART_LOGIC_UNK7;
+		ELONA_UNK2 = USART_LOGIC_UNK7;
+		goto main_logic_ret;
+	}
+
+	if (USART_LOGIC_UNK6 < 0x03)
+	{
+		ELONA_UNK1 = 0xcb;
+		goto main_logic_ret;
+	}
+	else if (USART_LOGIC_UNK6 == 0x03)
+	{
+		if (SSP_PACKET_UNK1 & 0x02 && SSP_PACKET_DATA_18 == 0x01)
 		{
-			ELONA_UNK1 = 0xcb;
+			ELONA_UNK1 = 0xd2;
+			ELONA_UNK2 = 0xd2;
+			goto main_logic_ret;
+		}
+		else if (SSP_PACKET_UNK1 & 0x04 && SSP_PACKET_DATA_18 == 0x01)
+		{
+			ELONA_UNK1 = 0xd3;
+			ELONA_UNK2 = 0xd3;
+			goto main_logic_ret;
+		}
+		else if (SSP_PACKET_UNK1 & 0x08 && SSP_PACKET_DATA_18 == 0x01)
+		{
+			ELONA_UNK1 = 0xd3;
+			ELONA_UNK2 = 0xd3;
+			goto main_logic_ret;
+		}
+		else if (SSP_PACKET_UNK1 & 0x10 && SSP_PACKET_DATA_18 == 0x01)
+		{
+			ELONA_UNK1 = 0xd5;
+			ELONA_UNK2 = 0xd5;
+			goto main_logic_ret;
+		}
+		else if (SSP_PACKET_UNK1 & 0x80 && SSP_PACKET_DATA_18 == 0x01)
+		{
+			ELONA_UNK1 = 0xd6;
+			ELONA_UNK2 = 0xd6;
+			goto main_logic_ret;
+		}
+		else if (SSP_PACKET_UNK1 & 0x20 && SSP_PACKET_DATA_18 == 0x01)
+		{
+			ELONA_UNK1 = 0xd0;
+			ELONA_UNK2 = 0xd0;
+			goto main_logic_ret;
+		}
+		else if (SSP_PACKET_UNK1 & 0x01 && SSP_PACKET_DATA_18 == 0x01)
+		{
+			ELONA_UNK1 = 0xd5;
+			ELONA_UNK2 = 0xd6;
 			goto main_logic_ret;
 		}
 		else
 		{
 			ELONA_UNK1 = 0xcb;
-			ELONA_UNK2 = 0xcb;
 			goto main_logic_ret;
 		}
 	}
 
-	// todo: finish that
+	else if (USART_LOGIC_UNK6 == 0x04)
+	{
+		if (TIMER1_UNK5 & 0x02)
+		{
+			ELONA_UNK1 = 0xcc;
+			goto main_logic_ret;
+		}
+		else if (TIMER1_UNK5 & 0x04)
+		{
+			ELONA_UNK1 = 0xcd;
+			goto main_logic_ret;
+		}
+		else if (!(SSP_PACKET_UNK1 & 0x10))
+		{
+			ELONA_UNK1 = 0xcb;
+			goto main_logic_ret;
+		}
+		else if (SSP_PACKET_DATA_18 = 0x01)
+		{
+			ELONA_UNK1 = 0xcf;
+			goto main_logic_ret;
+		}
+		else
+		{
+			ELONA_UNK1 = 0xcb;
+			goto main_logic_ret;
+		}
+	}
+
+	else if (USART_LOGIC_UNK6 == 0x05)
+	{
+		if (TIMER1_UNK5 & 0x02)
+		{
+			ELONA_UNK1 = 0xcc;
+			goto main_logic_ret;
+		}
+		else if (TIMER1_UNK5 & 0x04)
+		{
+			ELONA_UNK1 = 0xcd;
+			goto main_logic_ret;
+		}
+		else if (SSP_PACKET_UNK1 & 0x10)
+		{
+			if (SSP_PACKET_DATA_18 = 0x01)
+			{
+				ELONA_UNK1 = 0xce;
+				goto main_logc_ret;
+			}
+			else
+			{
+				ELONA_UNK1 = 0xcb;
+				goto main_logic_ret;
+			}
+		}
+		else
+		{
+			ELONA_UNK1 = 0xcb;
+			goto main_logic_ret;
+		}
+	}
+
+	else if (USART_LOGIC_UNK6 == 0x06)
+	{
+		ELONA_UNK1 = 0xd0;
+		goto main_logic_ret;
+	}
+
+	goto main_logic_ret;
 
 ML_17:
 	ELONA_UNK1 = 0xd1;
