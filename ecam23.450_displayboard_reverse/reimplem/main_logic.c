@@ -587,6 +587,8 @@ main_logic_jumper:
 main_logic_ret:
 
 	Elodie();
+
+	// We need to display the progress bar
 	if (ENTRY_DATA_UNK1 & 0x20 && !(TIMER0_INT_UNK2 & 0x40))
 	{
 		CLR(TIMER0_INT_UNK2, 3);
@@ -738,8 +740,13 @@ main_logic_ret:
 	else
 		HW_INIT2_UNK9 = 0x32;
 
-
-	// todo: last if block
+	// Twisted logic here, but well...
+	if(TIMER1_UNK4 & 0x4f)
+	{
+		USART_LOGIC_UNK2 = USART_LOGIC_UNK6 & 0x1f;
+	}
+	if ( (!(TIMER1_UNK4 & 0x4f) || USART_LOGIC_UNK2 <= 0x02) && (TIMER1_UNK4 & 0x3f != 0x23) )
+		SET(ENTRY_DATA_UNK, 4);
 
 	return;
 }

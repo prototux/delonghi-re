@@ -45,3 +45,57 @@ void Eleonore(void)
 	else
 		ELEONOR_UNK@ = 0x80;
 }
+
+
+// This init some data... maybe main logic data?
+void init_something_2(void)
+{
+	TIMER1_UNK4 = 0x00;
+	USART_LOGIC_UNK6 = 0x00;
+	ML_UNK3 = 0xff;
+	USART_LOGIC_UNK3 = 0xff;
+	INIT_ST2_UNK1 = 0xff;
+	INIT_ST2_UNK2 = 0xff;
+	ML_UNK2 = 0xff;
+	SET(ENTRY_DATA_UNK1, 2);
+	SET(SSP_PACKET_DATA_18_BITCOND, 7);
+	USART_LOGIC_UNK27 = 0x00;
+	USART_LOGIC_UNK28 = 0x00;
+	USART_LOGIC_UNK29 = 0xd0;
+	Caroline();
+
+	if (Eloise() == 0x00)
+	{
+		SSP_PACKET_DATA_17_PARAM = PACKET_BUFFER[0] & 0x7f;
+		SSP_PACKET_DATA_16_PARAM = PACKET_BUFFER[1] & 0x7f;
+		SSP_PACKET_DATA_15_PARAM = PACKET_BUFFER[2] & 0x3f;
+		if (!(PACKET_BUFFER[7] & 0x80))
+			SET(SSP_PACKET_DATA_18_BITCOND, 6);
+	}
+	else
+	{
+		ELONA_UNK1 = 0x00;
+		ELONA_UNK2 = 0x00;
+		INIT_ST2_UNK3 = 0x00;
+	}
+
+	// These are hidden params for Cecile?
+	SET(PACKET_BUFFER, 7);
+	SSP_PACKET_DATA_12 = 0x00;
+	SSP_PACKET_DATA_18_MASK = 0x00;
+	SSP_PACKET_DATA_18_TMP =- 0xd0;
+	Cecile();
+
+	// Wait some cpu cycles
+	USART_LOGIC_UNK30 = 0x42;
+	while (USART_LOGIC_UNK30 != 0) USART_LOGIC_UNK30 -= 1;
+
+	// These are hidden params for Cecile?
+	CLR(PACKET_BUFFER, 7);
+	SSP_PACKET_DATA_12 = 0x00;
+	SSP_PACKET_DATA_18_MASK = 0x00;
+	SSP_PACKET_DATA_18_TMP = 0xd0;
+	Cecile();
+
+	return
+}

@@ -33,13 +33,14 @@ char SSP_PACKET_UNK1; // 0x3e
 char INIT_HW1_UNK1; // 0x3f
 char SSP_TX_BUFFER_INDEX; // 0x40
 char SSP_PACKET_SIZE; // 0x41
-
+char INIT_ST2_UNK1; // 0x42
+char INIT_ST2_UNK1; // 0x43
 char SSP_UNK2; // 0x44
 char TIMER0_INT_UNK1; // 0x45
 char ML_UNK2; // 0x46
 char ELONA_UNK1; // 0x47
 char ELONA_UNK2; // 0x48
-
+char INIT_ST2_UNK3; // 0x49
 char USART_LOGIC_UNK30; // 0x4a
 char USART_PACKET_CHECKSUM; // 0x4b
 char USART_LOGIC_UNK2; // 0x4c
@@ -54,16 +55,23 @@ char INIT_ST1_UNK3; // 0x54
 char CHECKSUM_UNK1; // 0x55
 char CHECKSUM_UNK2; // 0x56
 char ADELE_UNK1; // 0x57
-
+// 0x58
+// 0x59
+// 0x5a
+// 0x5b
 char USART_LOGIC_UNK27; // 0x5c
 char USART_LOGIC_UNK28; // 0x5d
 char USART_LOGIC_UNK29; // 0x5e
 char CAROLINE_UNK1; // 0x5f
 char CAROLINE_UNK2; // 0x60
 char CAROLINE_UNK3; // 0x61
-
+// 0x62
+// 0x63
+// 0x64
 char USART_RX_RCVD_BYTE; // 0x65
-
+// 0x66
+// 0x67
+// 0x68
 char ISR_BKP_STATUS; // 0x69
 char ISR_BKP_FSR; // 0x6a
 char ISR_BKP_PCLATH; // 0x6b
@@ -71,7 +79,6 @@ char ISR_BKP_FETCH_ADDR_L; // 0x6c
 char ISR_BKP_FETCH_ADDR_H; // 0x6d
 char FETCH_ADDR_L; // 0x6e
 char FETCH_ADDR_H; // 0x6f
-
 // Shadowed vars at 0x70
 char ISR_BKP_SHWD3; // 0x70
 char ISR_BKP_SHWD1; // 0x71
@@ -80,7 +87,7 @@ char ISR_BKP_SHWD6; // 0x73
 char ISR_BKP_ENTRY_SUB2_UNK1; // 0x74
 char ISR_BKP_SHWD4; // 0x75
 char ISR_BKP_SHWD5; // 0x76
-
+// 0x77 seems unused...
 char ISR_BKP_WREG; // 0x78
 char ENTRY_SUB2_UNK1; // 0x79
 char EVELISE_UNK1; // 0x7a
@@ -88,5 +95,5 @@ char MLOGIC_SUB2_UNK1; // 0x7b
 char MLOGIC_SUB2_UNK2; // 0x7c
 char ESTELLE_UNK1; // 0x7d;
 char ESTELLE_UNK2; // 0x7e
-
+char ELISE_UNK1; // 0x7f
 // Ends at 0x7f

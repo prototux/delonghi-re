@@ -16,7 +16,7 @@ DONE	deadcode_3
 DONE	delay_2ms
 DONE	Eleonore
 DONE	Eliana
-----	Elise
+DONE	Elise
 DONE	Eloane
 ----	Elodie
 DONE	Eloise
@@ -33,7 +33,7 @@ DONE	fetch_data_withparam
 DONE	init_hardware_1
 DONE	init_hardware_2
 DONE	init_ram_with_data
-----	init_something_2
+DONE	init_something_2
 DONE	interrupt_handler_ssp
 DONE	interrupt_handler_timer0
 DONE	interrupt_handler_timer1
@@ -41,7 +41,7 @@ DONE	interrupt_handler_usart_rx
 DONE	interrupt_handler_usart_tx
 DONE	main
 DONE	memclear
-----	MAINLOOP_MAIN_LOGIC
+WIP-	MAINLOOP_MAIN_LOGIC
 WIP-	MAINLOOP_MAIN_LOGIC_SUB1
 DONE	MAINLOOP_MAIN_LOGIC_SUB2
 ----	MAINLOOP_SUB1
