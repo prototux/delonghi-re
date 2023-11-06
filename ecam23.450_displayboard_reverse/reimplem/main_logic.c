@@ -125,8 +125,110 @@ ML_12:
 	goto main_logic_ret;
 
 ML_1:
+	CLR(TIMER0_INT_UNK2, 1);
+	SET(ENTRY_DATA_UNK4, 7);
+
+	if (!ML_UNK4)
+		CLR(ENTRY_DATA_UNK4, 4);
+
+	if (TIMER1_UNK5 & 0x08)
+	{
+		ML_UNK4 = 0x0a;
+		SET(ENTRY_DATA_UNK4, 4);
+		ELONA_UNK1 = 0x16;
+		ELONA_UNK2 = 0x17;
+		goto main_logic_ret;
+	}
+
+	if (TIMER1_UNK5 & 0x10)
+	{
+		ML_UNK4 = 0x0a;
+		SET(ENTRY_DATA_UNK4, 4);
+		ELONA_UNK1 = 0x15;
+		goto main_logic_ret;
+	}
+
+	if (SSP_PACKET_DATA_18_BITCOND & 0x40 && SSP_PACKET_DATA_18)
+	{
+		ML_UNK4 = 0x0a;
+		SET(ENTRY_DATA_UNK4, 4);
+		goto main_logic_ret;
+	}
+
+	USART_LOGIC_UNK2 = USART_LOGIC_UNK6 & 0x1f;
+	if (USART_LOGIC_UNK2 < 0x02)
+	{
+		if (Elona() != 0x00)
+			goto main_logic_ret;
+		ELONA_UNK1 = 0x13;
+		INIT_HW1_UNK6 = 0xff;
+		goto main_logic_ret;
+	}
+
+	if (SSP_PACKET_DATA_18_BITCOND & 0x40)
+	{
+		MLOGIC_SUB2_UNK7 = SSP_PACKET_DATA_15_PARAM;
+		MLOGIC_SUB2_UNK6 = SSP_PACKET_DATA_16_PARAM;
+		MAINLOOP_MAIN_LOGIC_SUB1(0x01);
+		SET(MLOGIC_SUB2_UNK6, 7);
+		if (HW_INIT2_UNK1 & 0x02)
+		{
+			MLOGIC_SUB2_UNK3 = 0x07;
+			goto main_logic_ret;
+		}
+		else
+		{
+			MLOGIC_SUB2_UNK3 = 0x06;
+			goto main_logic_ret;
+		}
+	}
 
 ML_2:
+	if (Elona() != 0x00)
+		goto main_logic_ret;
+
+	if (TIMER1_UNK6 & 0x3f == 0x08)
+	{
+		SET(TIMER0_INT_UNK2, 1);
+		USART_LOGIC_UNK2 = USART_LOGIC_UNK6 & 0x1f;
+		// 0x1a;
+		if (0x05 < USART_LOGIC_UNK2)
+		{
+			ELONA_UNK1 = 0x1a;
+			ELONA_UNK2 = 0x19;
+			goto main_logic_ret;
+		}
+		else
+		{
+			ELONA_UNK1 = 0x1a;
+			SET(ENTRY_DATA_UNK1, 5);
+			goto main_logic_ret;
+		}
+	}
+
+	USART_LOGIC_UNK2 = USART_LOGIC_UNK6 & 0x1f;
+	if (0x08 < USART_LOGIC_UNK2)
+		SET(TIMER0_INT_UNK2, 1);
+	else
+		CLR(TIMER0_INT_UNK2, 1);
+
+	CLR(SSP_PACKET_DATA_18_BITCOND, 2);
+
+	if ((USART_LOGIC_UNK6 & 0x1f) == 0x05)
+		SET(SSP_PACKET_DATA_18_BITCOND, 2);
+
+	if (!(SSP_PACKAT_DATA_18_BITCOND & 0x04))
+	{
+		SET(ENTRY_DATA_UNK1, 5)
+		ELONA_UNK1 = 0x1a;
+		goto main_logic_ret;
+	}
+	else
+	{
+		ELONA_UNK1 = 0x18;
+		ELONA_UNK2 = 0x19;
+		goto main_logic_ret;
+	}
 
 ML_3:
 	if (Elona())
