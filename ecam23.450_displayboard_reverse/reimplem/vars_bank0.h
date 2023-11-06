@@ -16,7 +16,7 @@ char USART_SSP_PACKET_STATUS; // 0x2d
 char SSP_PACKET_DATA_18_BITCOND; // 0x2e
 char ENTRY_DATA_UNK1; // 0x2f
 char TIMER0_INT_UNK2; // 0x30
-// 0x31
+char ML_UNK1; // 0x31
 char INIT_HW1_UNK2; // 0x32
 char INIT_HW1_UNK4; // 0x33
 char INIT_HW1_UNK3; // 0x34
@@ -36,7 +36,7 @@ char SSP_PACKET_SIZE; // 0x41
 
 char SSP_UNK2; // 0x44
 char TIMER0_INT_UNK1; // 0x45
-
+char ML_UNK2; // 0x46
 char ELONA_UNK1; // 0x47
 char ELONA_UNK2; // 0x48
 

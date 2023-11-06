@@ -583,8 +583,163 @@ main_logic_jumper:
 	goto ML_13;
 
 
-	// Return/end code
+	// Return/end code (also ML_4)
 main_logic_ret:
-	return;
 
+	Elodie();
+	if (ENTRY_DATA_UNK1 & 0x20 && !(TIMER0_INT_UNK2 & 0x40))
+	{
+		CLR(TIMER0_INT_UNK2, 3);
+
+		// Init LCD string
+		USART_PACKET_CHECKSUM = 0x00;
+		do
+		{
+			BIGARRAY[USART_PACKET_CHECKSUM] = 0x5f; // '_'
+			USART_PACKET_CHECKSUM += 1;
+		} while (USART_PACKET_CHECKSUM < 0x0a);
+
+		// Loading bar?
+		if (!USART_LOGIC_UNK13)
+			BIGARRAY[0] = 0xff;
+
+		if (USART_LOGIC_UNK13 < 0x0b)
+			BIGARRAY[1] = 0xff;
+
+		if (USART_LOGIC_UNK13 < 0x15)
+			BIGARRAY[2] = 0xff;
+
+		if (USART_LOGIC_UNK13 < 0x1f)
+			BIGARRAY[3] = 0xff;
+
+		if (USART_LOGIC_UNK13 < 0x29)
+			BIGARRAY[4] = 0xff;
+
+		if (USART_LOGIC_UNK13 < 0x33)
+			BIGARRAY[5] = 0xff;
+
+		if (USART_LOGIC_UNK13 < 0x3d)
+			BIGARRAY[6] = 0xff;
+
+		if (USART_LOGIC_UNK13 < 0x47)
+			BIGARRAY[7] = 0xff;
+
+		if (USART_LOGIC_UNK13 < 0x51)
+			BIGARRAY[8] = 0xff;
+
+		if (USART_LOGIC_UNK13 < 0x5b)
+			BIGARRAY[9] = 0xff;
+
+		MLOGIG_SUB2_UNK3 = 0x45;
+
+		// strcmp BIGARRAY and LCDARRAY2
+		USART_PACKET_CHECKSUM = 0x00;
+		do
+		{
+			USART_LOGIC_UNK2 = BIGARRAY[USART_PACKET_CHECKSUM];
+			tmp = LCDARRAY2[USART_PACKET_CHECKSUM];
+			if (tmp != USART_LOGIC_UNK2)
+				USART_PACKET_CHECKSUM = 0x0c; // essentially, break
+
+			USART_PACKET_CHECKSUM += 1;
+		} while (USART_PACKET_CHECKSUM < 0x0a);
+
+		// If strings are not identical (send it?)
+		if (USART_PACKET_CHECKSUM >= 0xc)
+			Emma(0x31);
+	}
+	else if (ENTRY_DATA_UNK3 & 0x80 && !(TIMER0_INT_UNK2 & 0x40))
+	{
+		// strcmp BIGARRAY and LCDARRAY2
+		USART_PACKET_CHECKSUM = 0x00;
+		do
+		{
+			USART_LOGIC_UNK2 = BIGARRAY[USART_PACKET_CHECKSUM];
+			tmp = LCDARRAY2[USART_PACKET_CHECKSUM];
+			if (tmp != USART_LOGIC_UNK2)
+				USART_PACKET_CHECKSUM = 0x0c; // essentially, break
+
+			USART_PACKET_CHECKSUM += 1;
+		} while (USART_PACKET_CHECKSUM < 0x0a);
+
+		// If strings are not identical (send it?)
+		if (USART_PACKET_CHECKSUM >= 0xc)
+			Emma(ML_UNK1);
+	}
+	else
+	{
+		// Init both BIGARRAY and LCDARRAY2
+		USART_PACKET_CHECKSUM = 0x00;
+		do
+		{
+			BIGARRAY[USART_PACKET_CHECKSUM] = 0x20;
+			LCDARRAY2[USART_PACKET_CHECKSUM] = 0x20;
+			USART_PACKET_CHECKSUM += 1;
+		} while (USART_PACKET_CHECKSUM < 0x0a);
+	}
+
+	if (ML_UNK2 != USART_LOGIC_UNK24 && ML_UNK3 == ELONA_UNK1 && USART_LOGIC_UNK3 == ELONA_UNK2 && USART_LOGIC_UNK24)
+	{
+		ML_UNK2 = USART_LOGIC_UNK24;
+		HW_INIT2_UNK8 = 0x32;
+		HW_INIT2_UNK9 = 0x32;
+
+		USART_PACKET_CHECKSUM = 0x00;
+		do
+		{
+			BIGARRAY[USART_PACKET_CHECKSUM] = 0x20;
+			USART_PACKET_CHECKSUM += 1;
+		} while (USART_PACKET_CHECKSUM < 0x0a);
+
+		ML_UNK3 = 0xff;
+		USART_LOGIC_UNK3 = 0xff;
+	}
+
+	if (ML_UNK3 == ELONA_UNK1 && USART_LOGIC_UNK3 == ELONA_UNK2 &&
+			!(ENTRY_DATA_UNK3 & 0x80) && !(ENTRY_DATA_UNK1 & 0x20) && HW_INIT2_UNK10)
+
+	{
+		HW_INIT2_UNK10 = 0x1e;
+		HW_INIT2_UNK8 = 0x32;
+		HW_INIT2_UNK8 = 0x32;
+		Emy(0xff);
+
+		USART_PACKET_CHECKSUM = 0x00;
+		do
+		{
+			BIGARRAY[USART_PACKET_CHECKSUM] = 0x20;
+			USART_PACKET_CHECKSUM += 1;
+		} while (USART_PACKET_CHECKSUM < 0x0a);
+
+		ML_UNK3 = 0xff;
+		USART_LOGIC_UNK3 = 0xff;
+	}
+
+	if (ML_UNK3 == ELONA_UNK1)
+	{
+		if (!(ENTRY_DATA_UNK3 & 0x80) && !(ENTRY_DATA_UNK1 & 0x20) && HW_INIT2_UNK8)
+		{
+			HW_INIT2_UNK8 = 0x32;
+			ML_UNK3 = 0xff;
+		}
+	}
+	else
+		HW_INIT2_UNK8 = 0x32;
+
+
+	if (USART_LOGIC_UNK8 == ELONA_UNK2 && !(ENTRY_DATA_UNK3 & 0x80) && !(ENTRY_DATA_UNK1 & 0x20))
+	{
+		if (!HW_INIT_UNK9)
+		{
+			HW_INIT2_UNK9 = 0x32;
+			USART_LOGIC_UNK3 = 0xff;
+		}
+	}
+	else
+		HW_INIT2_UNK9 = 0x32;
+
+
+	// todo: last if block
+
+	return;
 }

@@ -19,7 +19,7 @@ char HW_INIT2_UNK1; // 0x36
 char HW_INIT2_UNK3; // 0x37
 
 char HW_INIT2_UNK11; // 0x39
-
+char ML_UNK3; // 0x3a
 char USART_LOGIC_UNK3; // 0x3b
 char HW_INIT2_UNK5; // 0x3c
 char USART_LOGIC_UNK1; // 0x3d
