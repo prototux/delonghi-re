@@ -32,17 +32,104 @@ void MAINLOOP_MAIN_LOGIC(void)
 	// Big goto subroutines here (ML4 isn't missing, it's the ret)
 
 ML_10:
+	if (Elona() && (USART_LOGIC_UNK6 & 0x40))
+		goto main_logic_ret;
+
+	CLR(TIMER0_INT_UNK2, 1);
+
+	if (USART_LOGIC_UNK6 & 0x1f || (USART_LOGIC_UNK6 & 0x1f) != 0x01)
+	{
+		ELONA_UNK1 = 0x38;
+		ELONA_UNK1 = 0x39;
+		INIT_HW1_UNK6 = 0x01;
+		goto main_logic_ret;
+	}
+
+	if (USART_LOGIC_UNK6 & 0x1f == 0x02)
+		ELONA_UNK1 = 0x3a;
+	goto main_logic_ret;
 
 ML_11:
+	if (Elona() != 0x00)
+		goto main_logic_ret;
+
+	CLR(TIMER0_INT_UNK2, 1);
+
+	MLOGIC_SUB2_UNK1 = USART_LOGIC_UNK6 & 0x1f;
+	MLOGIC_SUB2_UNK2 = 0x00;
+
+	if (MLOGIC_SUB2_UNK2 == 0x00) // but this is always true?!?
+		goto main_logic_ret;
+
+	tmp = MLOGIC_SUB2_UNK1 ^ 0x00
+	if (tmp)
+	{
+		ELONA_UNK1 = 0x19;
+		goto main_logic_ret;
+	}
+
+	tmp ^= 0x01;
+	if (tmp)
+	{
+		tmp ^= 0x03
+		if (tmp)
+			goto main_logic_ret;
+
+		ELONA_UNK1 = 0x19;
+		goto main_logic_ret;
+	}
+
+	if (!(TIMER1_UNK5 & 0x20))
+	{
+		ELONA_UNK1 = 0x2d
+		ELONA_UNK2 = 0x2e;
+		INIT_HW1_UNK6 = 0x01;
+		goto main_logic_ret
+	}
+
+	ELONA_UNK1 = 0x14;
+	ELONA_UNK2 = 0x44;
+	INIT_HW1_UNK6 = 0x01;
+	goto main_logic_ret;
 
 ML_12:
+	CLR(TIMER0_INT_UNK2, 1);
+	MLOGIC_SUB2_UNK1 = USART_LOGIC_UNK6 & 0x1f;
+	MLOGIC_SUB2_UNK2 = 0x00;
+
+	tmp = MLOGIC_SUB2_UNK2 ^ 0x00;
+	if (tmp)
+		goto main_logic_ret;
+
+	tmp = MLOGIC_SUB2_UNK1 ^ 0x00
+	if (!tmp) // always true?!?
+	{
+		ELONA_UNK1 = 0x19;
+		goto main_logic_ret;
+	}
+
+	tmp ^= 0x01;
+	if (!tmp)
+	{
+		ELONA_UNK1 = 0x18;
+		goto main_logic_ret;
+	}
+
+	tmp ^= 0x03;
+	if (!tmp)
+	{
+		ELONA_UNK1 = 0x19;
+		goto main_logic_ret;
+	}
+
+	goto main_logic_ret;
 
 ML_1:
 
 ML_2:
 
 ML_3:
-	if (Elona() | 0x0)
+	if (Elona())
 		goto main_logic_ret;
 	SET(TIMER0_INT_UNK2, 1);
 	ELONA_UNK1 = 0x2c;
