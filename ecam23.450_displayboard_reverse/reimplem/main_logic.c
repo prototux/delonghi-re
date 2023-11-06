@@ -121,6 +121,89 @@ ML_13: // This only calls SUB2
 	goto main_logic_ret;
 
 ML_14:
+	if (USART_LOGIC_UNK7)
+	{
+		INIT_HW1_UNK6 = 0xff;
+		ELONA_UNK2 = 0xdb;
+		goto main_logic_ret;
+	}
+
+	if (SSP_PACKET_DATA_18)
+	{
+		ELONA_UNK1 = 0xc9;
+		SET(ENTRY_DATA_UNK3, 7);
+		if (ENTRY_DATA_UNK3 & 0x40)
+		{
+			CLR(ENTRY_DATA_UNK6 , 6);
+			USART_LOGIC_UNK13 += 0xf6;
+			if (USART_LOGIC_UNK13 < 0x0a)
+				USART_LOGIC_UNK13 = 0x00;
+		}
+		else if (ENTRY_DATA_UNK3 & 0x20)
+		{
+			USART_LOGIC_UNK13 += 0x0a;
+			if (USART_LOGIC_UNK13 < 0x65)
+				USART_LOGIC_UNK13 = 0x64;
+		}
+		else
+			goto main_logic_ret;
+
+		SET(ENTRY_DATA_UNK1, 5);
+		goto main_logic_ret;
+	}
+
+	// Reset LCD string
+	USART_PACKET_CHECKSUM = 0x00;
+	do
+	{
+		BIGARRAY[USART_PACKET_CHECKSUM] = 0x20;
+		USART_PACKET_CHECKSUM += 1;
+	} while (USART_PACKET_CHECKSUM < 0x0a);
+
+	ELONA_UNK2 = 0xca;
+	SET(ENTRY_DATA_UNK3, 7);
+	MLOGIC_SUB2_UNK3 = 0x47;
+	if (SSP_PACKET_UNK1 & 0x01)
+	{
+		BIGARRAY[1] = 0x31;
+		goto main_logic_ret;
+	}
+	else if (SSP_PACKET_UNK1 & 0x02)
+	{
+		BIGARRAY[1] = 0x32;
+		goto main_logic_ret;
+	}
+	else if (SSP_PACKET_UNK1 & 0x04)
+	{
+		BIGARRAY[1] = 0x33;
+		goto main_logic_ret;
+	}
+	else if (SSP_PACKET_UNK1 & 0x20)
+	{
+		BIGARRAY[1] = 0x34;
+		goto main_logic_ret;
+	}
+	else if (SSP_PACKET_UNK1 & 0x10)
+	{
+		BIGARRAY[1] = 0x35;
+		goto main_logic_ret;
+	}
+	else if (SSP_PACKET_UNK1 & 0x08)
+	{
+		BIGARRAY[1] = 0x36;
+		goto main_logic_ret;
+	}
+	else if (SSP_PACKET_UNK1 & 0x80)
+	{
+		BIGARRAY[1] = 0x37;
+		goto main_logic_ret;
+	}
+	else if (SSP_PACKET_UNK1 & 0x40)
+	{
+		BIGARRAY[1] = 0x38;
+		goto main_logic_ret;
+	}
+	goto main_logic_ret;
 
 ML_15:
 	if ((TIMER1_UNK5 & 0xde) == CECILE_UNK1)
