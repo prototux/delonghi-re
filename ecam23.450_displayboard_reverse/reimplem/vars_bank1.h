@@ -1,14 +1,21 @@
 // Starts at 0x20
 char INIT_HW1_UNK6; // 0x20
+char SSP_PACKET_DATA_15_PARAM; //0x21
 char MLOGIC_SUB2_UNK7; // 0x22
-
+char MLOGIC_UNK1; // 0x23
 char CLEMENCE_UNK1; // 0x24
-
+char ELODIE_UNK1; // 0x25
+char ELODIE_UNK2; // 0x26
+char ELODIE_UNK3; // 0x27
+char CLARA_UNK1; // 0x28
 char USART_LOGIC_UNK24; // 0x29
-
+char SSP_PACKET_DATA_19; // 0x29
+char SSP_PACKET_DATA_16_PARAM; // 0x2a
 char MLOGIC_SUB2_UNK6; // 0x2c
 char SSP_PACKET_DATA_18; // 0x2d
-
+char SSP_PACKET_DATA_17_PARAM; // 0x2e
+char ELODIE_UNK4; // 0x2f
+char ELODIE_UNK5; // 0x30
 char MLOGIC_SUB2_UNK3; // 0x31
 char INIT_HW1_UNK8; // 0x32
 char ENTRY_DATA_UNK2; // 0x33
@@ -23,24 +30,28 @@ char USART_LOGIC_UNK3; // 0x3b
 char HW_INIT2_UNK5; // 0x3c
 char USART_LOGIC_UNK1; // 0x3d
 char HW_INIT2_UNK4; // 0x3e
-
+char USART_RX_UNKNOWN; // 0x3f
 char USART_TX_UNKNOWN; // 0x40
 char USART_LOGIC_UNK20; // 0x41
-
+char USART_RX_BUFFER_INDEX; // 0x42
+char USART_RX_PACKET_SIZE; // 0x43
 char USART_TX_BUFFER_INDEX; // 0x44
 char USART_TX_PACKET_SIZE; // 0x45
 char USART_LOGIC_UNK21; // 0x46
-
 char HW_INIT2_UNK8; // 0x47
 char HW_INIT2_UNK9; // 0x48
 char HW_INIT2_UNK6; // 0x49
-
 char USART_LOGIC_UNK25; // 0x4a
 char HW_INIT2_UNK7; // 0x4b
-
+char CLARA_UNK2; // 0x4c
 char HW_INIT2_UNK10; // 0x4d
 char USART_LOGIC_UNK26; // 0x4e
-
+char CLARA_UNK3; // 0x4f
+char CLARA_UNK4; // 0x50
+char CLARA_UNK5; // 0x51
+char CLARA_UNK6; // 0x52
+// 0x53 is unused
+// 0x54 is unused
 char MLOGIC_SUB2_UNK4; // 0x55
 char MLOGIC_SUB2_UNK5; // 0x56
 char CLEMENCE_UNK1; // 0x57
@@ -51,12 +62,21 @@ char USART_LOGIC_UNK15; // 0x5b
 char USART_LOGIC_UNK14; // 0x5c
 char USART_LOGIC_UNK18; // 0x5d
 char USART_LOGIC_UNK19; // 0x5e
-
+char MLOOP_SUB1_UNK1; // 0x5f
+char MLOOP_SUB2_UNK2; // 0x60
 char USART_LOGIC_UNK22; // 0x61
 char USART_LOGIC_UNK23; // 0x62
 char USART_LOGIC_UNK16; // 0x63
 char USART_LOGIC_UNK17; // 0x64
 char TIMER1_UNK3; // 0x66
-
+char MLOOP_SUB1_UNK3; // 0x67
+// 0x68 is unused
+// 0x69 is unused
+// 0x6a is unused
+// 0x6b is unused
+// 0x6c is unused
+// 0x6d is unused
+// 0x6e is unused
+// 0x6f is unused
 // Shadow at 0x70
 // Ends at 0x7f

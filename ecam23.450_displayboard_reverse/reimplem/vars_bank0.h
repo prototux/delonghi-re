@@ -1,13 +1,13 @@
 // Starts at 0x20
-// 0x20
-// 0x21
+// 0x20 is unused
+// 0x21 is unused
 char MLOGIC_SUB1_UNK1; // 0x22
 char TIMER1_UNK5; // 0x23
 char CECILE_UNK1; // 0x24
 char SSP_PACKET_DATA_12_SRC; // 0x25
 char SSP_PACKET_DATA_18_MASK_SRC; // 0x26
-// 0x27
-// 0x28
+// 0x27 is unused
+char EMILIE_UNK1; // 0x28
 char PUSH_UNK1; // 0x29
 char USART_LOGIC_UNK9; // 0x2a
 char USART_LOGIC_UNK10; // 0x2b
@@ -55,23 +55,23 @@ char INIT_ST1_UNK3; // 0x54
 char CHECKSUM_UNK1; // 0x55
 char CHECKSUM_UNK2; // 0x56
 char ADELE_UNK1; // 0x57
-// 0x58
-// 0x59
-// 0x5a
-// 0x5b
+char EMILIE_UNK2; // 0x58
+char EMILIE_UNK3; // 0x59
+char EMILIE_UNK4; // 0x5a
+char EMILIE_UNK5; // 0x5b
 char USART_LOGIC_UNK27; // 0x5c
 char USART_LOGIC_UNK28; // 0x5d
 char USART_LOGIC_UNK29; // 0x5e
 char CAROLINE_UNK1; // 0x5f
 char CAROLINE_UNK2; // 0x60
 char CAROLINE_UNK3; // 0x61
-// 0x62
-// 0x63
-// 0x64
+char SOFTI2C_UNK1;// 0x62
+char SOFTI2C_UNK2;// 0x63
+char SOFTI2C_UNK3;// 0x64
 char USART_RX_RCVD_BYTE; // 0x65
-// 0x66
-// 0x67
-// 0x68
+// 0x66 is unused
+// 0x67 is unused
+char MLOOP_SUB1_UNK1;// 0x68
 char ISR_BKP_STATUS; // 0x69
 char ISR_BKP_FSR; // 0x6a
 char ISR_BKP_PCLATH; // 0x6b
@@ -87,7 +87,7 @@ char ISR_BKP_SHWD6; // 0x73
 char ISR_BKP_ENTRY_SUB2_UNK1; // 0x74
 char ISR_BKP_SHWD4; // 0x75
 char ISR_BKP_SHWD5; // 0x76
-// 0x77 seems unused...
+// 0x77 is unused
 char ISR_BKP_WREG; // 0x78
 char ENTRY_SUB2_UNK1; // 0x79
 char EVELISE_UNK1; // 0x7a

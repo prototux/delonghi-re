@@ -179,6 +179,7 @@ digraph G {
   // Clara
   Clara -> shdw_mem;
   Clara -> SUB2_UNK1;
+  Clara -> Estelle;
   Clara -> Caroline;
 
   // Clemence

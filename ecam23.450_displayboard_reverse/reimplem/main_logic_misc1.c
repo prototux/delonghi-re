@@ -24,3 +24,8 @@ void Estelle(void)
 
 	return 0;
 }
+
+// Don't know what this does yet
+void Clara(void)
+{
+}

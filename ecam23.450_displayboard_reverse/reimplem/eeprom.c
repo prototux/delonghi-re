@@ -1,5 +1,9 @@
+// Seems like the write part of the eeprom driver
+void Cecile(void)
+{
+}
 
-// Seems like part of the eeprom driver
+// Seems like the read part of the eeprom driver
 void Caroline(void)
 {
 	register char tmp;

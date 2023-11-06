@@ -50,3 +50,8 @@ void Emma(char param)
 void Elodie(void)
 {
 }
+
+// This also seems to send strings to the LCD?
+void Emilie(void)
+{
+}
