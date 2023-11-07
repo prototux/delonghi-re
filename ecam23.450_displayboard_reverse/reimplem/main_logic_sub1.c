@@ -13,4 +13,59 @@ void MAINLOOP_MAIN_LOGIC_SUB1(byte param)
 	while (USART_LOGIC_UNK4 < 0xa);
 
 
+	if (!(TIMER1_UNK2 & 0x02))
+	{
+		if (MLOGIC_SUB2_UNK7 < 0x12)
+		{
+			if (MLOGIC_SUB2_UNK7 == 0x00)
+				MLOGIC_SUB2_UNK7 = 0x12;
+
+			BIGARRAY[6] = 0x41;
+		}
+		else
+		{
+			if (MLOGIC_SUB2_UNK7 == 0x21)
+				MLOGIC_SUB2_UNK7 = 0x09;
+			else if (MLOGIC_SUB2_UNK7 == 0x20)
+				MLOGIC_SUB2_UNK7 = 0x08;
+			else if (MLOGIC_SUB2_UNK7 > 0x12)
+				MLOGIC_SUB2_UNK7 = 0x12;
+
+			BIGARRAY[6] = 0x50;
+		}
+
+		BIGARRAY[7] = 0x4d;
+	}
+
+	BIGARRAY[0] = ((MLOGIC_SUB2_UNK7 & 0xf0 >> 4 | MLOGIC_SUB2_UNK7 & 0x0f << 4) & 0x0f) | 0x30;
+	BIGARRAY[1] = (MLOGIC_SUB2_UNK7 & 0x0f) | 0x30;
+	BIGARRAY[2] = 0x3a;
+	BIGARRAY[3] = (MLOGIC_SUB2_UNK6 & 0x0f) | 0x30;
+	BIGARRAY[4] = (MLOGIC_SUB2_UNK6 & 0x0f) | 0x30;
+
+	if (USART_LOGIC_UNK5 == 0x02 && (ENTRY_DATA_UNK4 & 0x40))
+	{
+		BIGARRAY[0] = 0x20;
+		BIGARRAY[1] = 0x20;
+	}
+
+	if (USART_LOGIC_UNK5 == 0x03 && (ENTRY_DATA_UNK4 & 0x40))
+	{
+		BIGARRAY[3] = 0x20;
+		BIGARRAY[4] = 0x20;
+	}
+
+	if (USART_LOGIC_UNK5 == 0x01 && (USART_SSP_PACKET_STATUS & 0x40))
+		BIGARRAY[2] = 0x20;
+
+	if (BIGARRAY[0] == 0x30)
+		BIGARRAY[0] = 0x20;
+
+	if (TIMER2_UNK2 & 0x01)
+		return;
+
+	if (TIMER1_UNK2 & 0x02)
+		BIGARRAY[6] = 0x10;
+	else
+		BIGARRAY[9] = 0x10;
 }
