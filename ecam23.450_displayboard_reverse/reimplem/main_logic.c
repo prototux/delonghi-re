@@ -231,7 +231,7 @@ ML_2:
 	}
 
 ML_3:
-	if (Elona())
+	if (Elona() != 0x00)
 		goto main_logic_ret;
 	SET(TIMER0_INT_UNK2, 1);
 	ELONA_UNK1 = 0x2c;
@@ -239,13 +239,202 @@ ML_3:
 	goto main_logic_ret;
 
 ML_6:
+	if (Elona() != 0x00)
+		goto main_logic_ret;
+
+
 
 ML_5:
+	if (Elona() != 0x00)
+		goto main_logic_ret;
+
+	SET(TIMER0_INT_UNK2, 1);
+
+	if (!(TIMER1_UNK5 & 0x01))
+	{
+		ELONA_UNK1 = 0x2d;
+		ELONA_UNK2 = 0x1e;
+		goto main_logic_ret;
+	}
+	// else...
+
+	MLOGIC_SUB2_UNK1 = USART_LOGIC_UNK6 & 0x01;
+	MLOGIC_SUB2_UNK2 = 0x00;
+	if (MLOGIC_SUB_2_UNK2 != 0x00) // always false...
+		goto main_logic_ret;
+
+	tmp = MLOGIC_SUB2_UNK1;
+
+	tmp ^= 0x00;
+	if (!tmp)
+	{
+		ELONA_UNK1 = 0x19;
+		goto main_logic_ret;
+	}
+
+	tmp ^= 0x01;
+	if (!tmp)
+	{
+		if (USART_LOGIC_UNK7 & 0x08)
+		{
+			ELONA_UNK1 = 0x26;
+			ELONA_UNK2 = 0x27;
+			goto main_logic_ret;
+		}
+
+		SET(SSP_PACKET_DATA_18_BITCOND, 5);
+
+		if (0x1e < HW_INIT2_UNK7)
+		{
+			ELONA_UNK1 = 0x25;
+			ELONA_UNK2 = 0x44;
+			INIT_HW1_UNK6 = 0x01;
+			goto main_logic_ret;
+		}
+		else
+		{
+			ELONA_UNK1 = 0x00;
+			ELONA_UNK1 += 1;
+			ELONA_UNK2 = 0x50;
+			INIT_HW1_UNK6 = 0x01;
+			goto main_logic_ret;
+		}
+	}
+
+	tmp ^= 0x03;
+	if (!tmp)
+	{
+		ELONA_UNK1 = 0x26;
+		ELINA_UNK2 = 0x27;
+		goto main_logic_ret;
+	}
+
+	tmp ^= 0x01;
+	if (!tmp)
+	{
+		if (USART_LOGIC_UNK7 & 0x08)
+		{
+			ELONA_UNK1 = 0x26;
+			ELONA_UNK2 = 0x27;
+			goto main_logic_ret;
+		}
+		else
+		{
+			ELONA_UNK1 = 0x1a;
+			ELONA_UNK2 = 0x44; // WHY?!?
+			ELONA_UNK2 = 0x1b;
+		}
+	}
+
+	tmp ^= 0x07;
+	if (!tmp)
+	{
+		if (USART_LOGIC_UNK7 & 0x08)
+		{
+			ELONA_UNK1 = 0x1a;
+			goto main_logic_ret;
+		}
+		else
+		{
+			ELONA_UNK1 = 0x1a;
+			ELONA_UNK2 = 0x44;
+			INIT_HW1_UNK6 = 0x01;
+			goto main_logic_ret;
+		}
+	}
+
+	tmp ^= 0x01;
+	if (!tmp)
+	{
+		ELONA_UNK1 = 0x29;
+		ELONA_UNK2 = 0x44;
+		INIT_HW1_UNK6 = 0x01;
+		goto main_logic_ret;
+	}
+
+	goto main_logic_ret;
 
 ML_7:
+	if (Elona() != 0x00)
+		goto main_logic_ret;
+
+	SET(TIMER0_INT_UNK2, 1);
+
+	if (!(USART_LOGIC_UNK6 & 0x1f))
+	{
+		if (!(USART_LOGIC_UNK8 & 0x20))
+		{
+			ELONA_UNK1 = 0x18;
+			ELONA_UNK2 = 0x19;
+			goto main_logic_ret;
+		}
+
+		ELONA_UNK1 = 0x3d;
+		ELONA_UNK2 = 0x3e;
+		goto main_logic_ret;
+	}
+
+	if (USART_LOGIC_UNK6 & 0x1f == 0x01)
+	{
+		if (USART_LOGIC_UNK6 & 0x40)
+		{
+			ELONA_UNK1 = 0x3b;
+			ELONA_UNK2 = 0x4a;
+			SET(SSP_PACKET_DATA_18_BITCOND, 3);
+			USART_LOGIC_UNK2 = 0x28;
+			goto main_logic_ret;
+		}
+		else
+		{
+			ELONA_UNK3 = 0x2b;
+			ELONA_UNK2 = 0x4a;
+			SET(SSP_PACKET_DATA_18_BITCOND, 3);
+			USART_LOGIC_UNK2 = 0x28;
+			goto main_logic_ret;
+		}
+	}
+
+	// It is strange that it isn't checking against UNK6
+	// but i've double checked it...
+	if (USART_LOGIC_UNK7 & 0x80)
+	{
+		ELONA_UNK1 = 0x3f;
+		ELONA_UNK2 = 0x12;
+		CLR(ENTRY_DATA_UNK1, 5);
+		goto main_logic_ret;
+	}
+
+	if (USART_LOGIC_UNK6 & 0x40)
+	{
+		ELONA_UNK1 = 0x3b;
+		SET(ENTRY_DATA_UNK1, 5);
+		USART_LOGIC_UNK2 = USART_LOGIC_UNK6 & 0x1f;
+		// why it does it again?
+		if (0x02 < USART_LOGIC_UNK2)
+		{
+			SET(ENTRY_DATA_UNK1, 5);
+			goto main_logic_ret;
+		}
+		else
+			goto main_logic_ret;
+	}
+	else
+	{
+		ELONA_UNK1 = 0x3b;
+		SET(ENTRY_DATA_UNK1, 5);
+		USART_LOGIC_UNK2 = USART_LOGIC_UNK6 & 0x1f;
+		// why it does it again?
+		if (0x02 < USART_LOGIC_UNK2)
+		{
+			SET(ENTRY_DATA_UNK1, 5);
+			goto main_logic_ret;
+		}
+		else
+			goto main_logic_ret;
+	}
 
 ML_8:
-	if (Elona() | 0x00)
+	if (Elona() != 0x00)
 		goto main_logic_ret;
 
 	CLR(TIMER0_INT_UNK2, 1);
