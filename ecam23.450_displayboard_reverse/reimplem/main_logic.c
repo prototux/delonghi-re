@@ -242,7 +242,139 @@ ML_6:
 	if (Elona() != 0x00)
 		goto main_logic_ret;
 
+	CLR(TIMER0_INT_UNK2, 1);
 
+	if (!(USART_LOGIC_UNK6 & 0x01))
+	{
+		USART_LOGIC_UNK2 = USART_LOGIC_UNK6 & 0x01;
+		if (0x0e < USART_LOGIC_UNK2)
+		{
+			if (USART_LOGIC_UNK6 & 0x40)
+			{
+				if (USART_LOGIC_UNK7 & 0x80)
+				{
+					ELONA_UNK1 = 0x40;
+					ELONA_UNK2 = 0x12;
+					CLR(ENTRY_DATA_UNK1, 5);
+					goto main_logic_ret;
+				}
+				else
+				{
+					ELONA_UNK1 = 0x3b;
+					SET(ENTRY_DATA_UNK1, 5);
+					goto main_logic_ret;
+				}
+			}
+			else
+			{
+				USART_LOGIC_UNK2 = USART_LOGIC_UNK6 & 0x1f;
+				if (0x04 > USART_LOGIC_UNK2)
+					SET(ENTRY_DATA_UNK1, 5);
+				ELONA_UNK1 = USART_LOGIC_UNK2 & 0x0e + 0x02;
+				USART_LOGIC_UNK2 = USART_LOGIC_UNK6 & 0x20;
+				ENTRY_SUB2_UNK1 = 0x05;
+				USART_LOGIC_UNK2 >>= 1;
+
+				do { ENTRY_SUB2_UNK1 -= 1; } while (ENTRY_SUB2_UNK1);
+
+				if (USART_LOGIC_UNK2 != 0x00)
+					ELONA_UNK1 += 1;
+
+				if (!(USART_LOGIC_UNK7 & 0x80))
+				{
+					ELONA_UNK1 = 0x12;
+					CLR(ENTRY_DATA_UNK1, 5);
+					goto main_logic_ret;
+				}
+
+				if (USART_LOGIC_UNK7 != 0x70)
+				{
+					USART_LOGIC_UNK2 = USART_LOGIC_UNK6 & 0x1f;
+					if (0x04 >= USART_LOGIC_UNK2)
+					{
+						USART_LOGIC_UNK2 = USART_LOGIC_UNK7 & 0x70;
+						USART_LOGIC_UNK2 = USART_LOGIC_UNK2 & 0x0f << 4 | USART_LOGIC_UNK2 & 0xf0 >> 4;
+						USART_LOGIC_UNK2 &= 0x0f;
+						ELONA_UNK2 = USART_LOGIC_UNK2 + 0x0b;
+					}
+
+					if (!(USART_LOGIC_UNK7 & 0x70))
+						goto main_logic_ret;
+
+					USART_LOGIC_UNK2 = USART_LOGIC_UNK6 & 0x1f;
+
+					if (0x04 < USART_LOGIC_UNK2)
+						goto main_logic_ret;
+
+					ELONA_UNK2 = 0x11;
+					goto main_logic_ret;
+				}
+				// else?
+			}
+		} // else?
+	}
+	else
+	{
+		USART_LOGIC_UNK30 = USART_LOGIC_UNK7 & 0x0e;
+
+		// That was horrible...
+		tmp = USART_LOGIC_UNK30;
+
+		tmp ^= 0x00;
+		if(!tmp)
+			ELONA_UNK1 = 0x2a;
+
+		tmp ^= 0x02;
+		if (!tmp)
+			ELONA_UNK1 = 0x56;
+
+		tmp ^= 0x06;
+		if (!tmp)
+			ELONA_UNK1 = 0x60;
+
+		tmp ^= 0x02;
+		if (!tmp)
+			ELONA_UNK1 = 0x61;
+
+		tmp ^= 0x0e;
+		if (!tmp)
+			ELONA_UNK1 = 0x62;
+
+		// This gave me headaches...
+		if (USART_LOGIC_UNK7 & 0x40)
+			ELONA_UNK2 = 0x14;
+
+		if (!(USART_LOGIC_UNK7 & 0x70) || (USART_SSP_PACKET_STATUS & 0x01))
+		{
+			USART_LOGIC_UNK2 = USART_LOGIC_UNK7 & 0x70;
+			USART_LOGIC_UNK2 = USART_LOGIC_UNK2 & 0x0f << 4 | USART_LOGIC_UNK2 & 0xf0 >> 4;
+			USART_LOGIC_UNK2 &= 0x0f;
+			ELONA_UNK2 = USART_LOGIC_UNK2 + 0x0b;
+		}
+		else
+		{
+			if (USART_LOGIC_UNK7 & 0x80)
+				ELONA_UNK2 = 0x11;
+		}
+
+		if (USART_SSP_PACKET_STATUS & 0x40 && !(USART_LOGIC_UNK9 & 0x04) && !(TIMER1_UNK2 & 0x20))
+			ELONA_UNK1 = 0x30;
+
+		if (!(USART_SSP_PACKET_STATUS & 0x40) && !(USART_LOGIC_UNK9 & 0x04) && !(TIMER1_UNK2 & 0x20))
+			ELONA_UNK2 = 0x43;
+
+		if (TIMER1_UNK2 & 0x40)
+			ELONA_UNK2 = 0x53;
+
+		if (!(TIMER1_UNK2 & 0x20) || !(ENTRY_DATA_UNK1 & 0x02))
+			goto main_logic_ret;
+
+		ELONA_UNK2 = 0x3c;
+		goto main_logic_ret
+	}
+
+	// i assume it's here...
+	goto main_logic_ret;
 
 ML_5:
 	if (Elona() != 0x00)
