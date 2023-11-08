@@ -1,3 +1,230 @@
 void MAINLOOP_SUB2(void)
 {
+	register char tmp;
+	CLR(INTCON, TMR0IE);
+
+	// This abort the whole process
+	if (HW_INIT2_UNK11)
+	{
+		SET(INTCON, TMR0IE);
+		return;
+	}
+
+	USART_LOGIC_UNK11 = 0x0a;
+	if (0x03 < PUSH_UNK1)
+		PUSH_UNK1 = 0x00;
+
+	// Set all 3 control pins
+	SET(PORTA, 0);
+	SET(PORTA, 1);
+	SET(PORTA, 2);
+
+	tmp = PUSH_UNK1;
+
+	tmp ^= 0x00;
+	if (!tmp)
+	{
+		CLR(PORTA, 0);
+
+		if (PORTB & 0x01)
+			USART_LOGIC_UNK30 = 0x01;
+		else
+			USART_LOGIC_UNK30 = 0x00;
+		INIT_HW1_UNK2 = (INIT_HW1_UNK2 ^ USART_LOGIC_UNK30) & 0xfe ^ USART_LOGIC_UNK30;
+
+		if (PORTB & 0x80)
+			USART_LOGIC_UNK30 = 0x01;
+		else
+			USART_LOGIC_UNK30 = 0x00;
+		USART_LOGIC_UNK30 <<= 1;
+		INIT_HW1_UNK2 = ((INIT_HW1_UNK2 ^ USART_LOGIC_UNK30) & 0xfd) ^ USART_LOGIC_UNK30;
+
+		PUSH_UNK1 += 1;
+		goto mainloop_sub2_postgoto;
+	}
+
+	tmp ^ 0x01;
+	if (!tmp)
+	{
+		CLR(PORTA, 1);
+
+		if (PORTB & 0x40)
+			USART_LOGIC_UNK30 = 0x01;
+		else
+			USART_LOGIC_UNK30 = 0x00;
+		USART_LOGIC_UNK30 << 2;
+		INIT_HW1_UNK2 = (INIT_HW1_UNK2 ^ USART_LOGIC_UNK30) & 0xfb ^ USART_LOGIC_UNK30;
+
+		if (PORTB & 0x80)
+			USART_LOGIC_UNK30 = 0x01;
+		else
+			USART_LOGIC_UNK30 = 0x00;
+		USART_LOGIC_UNK30 <<= 3;
+		INIT_HW1_UNK2 = ((INIT_HW1_UNK2 ^ USART_LOGIC_UNK30) & 0xf7) ^ USART_LOGIC_UNK30;
+
+		PUSH_UNK1 += 1;
+		goto mainloop_sub2_postgoto;
+	}
+
+	tmp ^ 0x03;
+	if (!tmp)
+	{
+		CLR(PORTA, 2);
+
+		if (PORTB & 0x40)
+			USART_LOGIC_UNK30 = 0x01;
+		else
+			USART_LOGIC_UNK30 = 0x00;
+		USART_LOGIC_UNK30 <<= 1;
+		INIT_HW1_UNK2 = ((INIT_HW1_UNK2 ^ USART_LOGIC_UNK30) & 0xef) ^ USART_LOGIC_UNK30;
+
+		if (PORTB & 0x80)
+			USART_LOGIC_UNK30 = 0x01;
+		else
+			USART_LOGIC_UNK30 = 0x00;
+		USART_LOGIC_UNK30 <<= 1;
+		INIT_HW1_UNK2 = ((INIT_HW1_UNK2 ^ USART_LOGIC_UNK30) & 0xdf) ^ USART_LOGIC_UNK30;
+
+		if (PORTB & 0x20)
+			USART_LOGIC_UNK30 = 0x01;
+		else
+			USART_LOGIC_UNK30 = 0x00;
+		USART_LOGIC_UNK30 = USART_LOGIC_UNK30 & 0xf0 >> 4 | USART_LOGIC_UNK30 & 0x0f << 4;
+		USART_LOGIC_UNK30 <<= 2;
+		INIT_HW1_UNK2 = ((INIT_HW1_UNK2 ^ USART_LOGIC_UNK30) & 0xfd) ^ USART_LOGIC_UNK30;
+
+		PUSH_UNK1 += 1;
+		goto mainloop_sub2_postgoto;
+	}
+
+	tmp ^= 0x01;
+	if (!tmp)
+	{
+		if (PORTC & 0x04)
+			USART_LOGIC_UNK30 = 0x01;
+		else
+			USART_LOGIC_UNK30 = 0x00;
+
+		USART_LOGIC_UNK30 >>= 2;
+
+		INIT_HW1_UNK2 = (INIT_HW1_UNK2 ^ USART_LOGIC_UNK30) & 0x7f ^ USART_LOGIC_UNK30;
+
+		PUSH_UNK1 += 1;
+		goto mainloop_sub2_postgoto;
+	}
+
+mainloop_sub2_postogo:
+	if (0x03 < PUSH_UNK1)
+	{
+		SSP_PACKET_UNK1 = INIT_HW1_UNK2 & INIT_HW1_UNK4;
+		INIT_HW1_UNK4 = INIT_HW1_UNK2;
+
+		SET(INTCON, TMR0IE);
+		SSP_PACKET_DATA_18 = 0x00;
+
+		if (SSP_PACKET_UNK1 & 0x01)
+			SSP_PACKET_DATA_18 += 1;
+
+		if (SSP_PACKET_UNK1 & 0x02)
+			USART_SSP_PACKET_STATUS += 1;
+
+		if (SSP_PACKET_UNK1 & 0x04)
+			SSP_PACKET_DATA_18 += 1;
+
+		if (SSP_PACKET_UNK1 & 0x40)
+			SSP_PACKET_DATA_18 += 1;
+
+		if (SSP_PACKET_UNK1 & 0x08)
+			SSP_PACKET_DATA_18 += 1;
+
+		if (SSP_PACKET_UNK1 & 0x10)
+			SSP_PACKET_DATA_18 += 1;
+
+		if (SSP_PACKET_UNK1 & 0x20)
+			SSP_PACKET_DATA_18 += 1;
+
+		if (SSP_PACKET_UNK1 & 0x80)
+			SSP_PACKET_DATA_18 += 1;
+
+		if (SSP_PACKET_UNK1 & 0x20)
+			SET(UsART_LOGIC_UNK30, 0);
+		else
+			CLR(USART_LOGIC_UNK30, 0);
+
+
+		// Bloc 2
+		// First
+		CLR(SSP_PACKET_DATA_12, 0);
+		if (USART_LOGIC_UNK30 & 0x01)
+			SET(SSP_PACKET_DATA_12_SRC, 0);
+
+		if (SSP_PACKET_UNK1 & 0x10)
+			SET(USART_LOGIC_UNK30, 0);
+		else
+			CLR(USART_LOGIC_UNK30, 0);
+
+		// Second
+		CLR(SSP_PACKET_DATA_12, 1);
+		if (USART_LOGIC_UNK30 & 0x01)
+			SET(SSP_PACKET_DATA_12_SRC, 1);
+
+		if (SSP_PACKET_UNK1 & 0x08)
+			SET(USART_LOGIC_UNK30, 0);
+		else
+			CLR(USART_LOGIC_UNK30, 0);
+
+		// Third
+		CLR(SSP_PACKET_DATA_12_SRC, 2);
+		if (USART_LOGIC_UNK30 & 0x01)
+			SET(SSP_PACKET_DATA_12_SRC, 2);
+
+		if (SSP_PACKET_UNK1 & 0x02)
+			SET(USART_LOGIC_UNK30, 0);
+		else
+			CLR(USART_LOGIC_UNK30, 0);
+
+		// Fourth
+		CLR(SSP_PACKET_DATA_12_SRC, 3);
+		if (USART_LOGIC_UNK30 & 0x01)
+			SET(SSP_PACKET_DATA_12_SRC, 3);
+
+		if (SSP_PACKET_UNK1 & 0x01)
+			SET(USART_LOGIC_UNK30, 0);
+		else
+			CLR(USART_LOGIC_UNK30, 0);
+
+		// Fifth
+		CLR(SSP_PACKET_DATA_12_SRC, 4);
+		if (USART_LOGIC_UNK30 & 0x01)
+			SET(SSP_PACKET_DATA_12_SRC, 4);
+
+		CLR(SSP_PACKET_DATA_12_SRC, 5);
+
+		if (SSP_PACKET_UNK1 & 0x40)
+			SET(USART_LOGIC_UNK30, 0);
+		else
+			CLR(USART_LOGIC_UNK30, 0);
+
+		// Sixth
+		CLR(SSP_PACKET_DATA_12_SRC, 6);
+		if (USART_LOGIC_UNK30 & 0x01)
+			SET(SSP_PACKET_DATA_12_SRC, 6);
+
+		if (SSP_PACKET_UNK1 & 0x04)
+			SET(USART_LOGIC_UNK30, 0);
+		else
+			CLR(USART_LOGIC_UNK30, 0);
+
+		// Seventh
+		CLR(SSP_PACKET_DATA_12_SRC, 7);
+		if (USART_LOGIC_UNK30 & 0x01)
+			SET(SSP_PACKET_DATA_12_SRC, 7);
+
+		if (SSP_PACKET_UNK1 & 0x80)
+			SET(USART_LOGIC_UNK30, 0);
+		else
+			CLR(USART_LOGIC_UNK30, 0);
+	}
+
+	SET(INTCON, TMR0IE);
 }
