@@ -10,7 +10,7 @@
 #define SDA_INPUT()  (TRISB |= (1 << SDA_PIN))
 #define SDA_OUTPUT() (TRISB &= ~(1 << SDA_PIN))
 
-// apparently, i2c_start
+// Start an I2C communication
 char softi2c_start(void)
 {
 	// Start condition
@@ -19,7 +19,7 @@ char softi2c_start(void)
 	SCL_HIGH();
 
 
-	SDA_OUTPUT(); // Why it does that? it's useless!
+	SDA_OUTPUT();
 	SDA_INPUT();
 	if (!(TRISB & 1<<3))
 		return 0x1;
@@ -35,27 +35,29 @@ char softi2c_start(void)
 	return 0x00;
 }
 
-// apparently, i2c_end
+// (Optionally) End an I2C communication
 void softi2c_end(void)
 {
+	// Send a pulse
 	SCL_LOW();
 	SDA_OUTPUT();
 	SDA_LOW();
-	// There should be a delay here...
+
+	// Set SCL to idle state
 	SCL_HIGH();
 	softi2c_wait();
 
-	// This should set SDA as input, not set it high?
+	// Set SDA to idle state
 	SDA_HIGH();
 	NOP;NOP;NOP;
 	softi2c_wait();
 }
 
-// apparently i2c_send_byte
-void softi2c_send_byte(char param)
+// Send a single byte
+void softi2c_send_byte(char byte)
 {
 	// Copy param and set SDA as output
-	SOFT_I2C_UNK1 = param;
+	SOFT_I2C_UNK1 = byte;
 	SDA_OUTPUT();
 
 	// Send a byte, MSB first
@@ -105,11 +107,11 @@ void softi2c_send_byte(char param)
 	return SOFT_I2C_UNK2;
 }
 
-// Apparently, i2c_send_byte_with_ack
-void softi2c_read_byte(char param)
+// Read a byte, with optional ACK
+void softi2c_read_byte(char send_ack)
 {
 	// Copy param
-	SOFT_I2C_UNK1 = param;
+	SOFT_I2C_UNK1 = send_ack;
 
 
 	SOFT_I2C_UNK3 = 0x00;
@@ -155,14 +157,16 @@ void softi2c_read_byte(char param)
 	return SOFT_I2C_UNK3;
 }
 
-// Seems to wait in the worst way possible
-// apparently, i2c_wait
-// 10 cpu cycles including the call
+// Wait ~10 cpu cycles -1.25us- (including the call) in the worst way possible
 void softi2c_wait(void)
 {
+	// Clear watchdog
 	CLRWDT();
+
+	// Set bit 1 of USART_SSP_PACKET_STATUS. This isn't checked anywhere,
+	// so either it's a debug/legacy flag, or it's a useless semaphore
 	SET(USART_SSP_PACKET_STATUS, 1);
-	if (!(USART_SSP_PACKET_STATUS & 0x01)) // this... can't be true
+	if (!(USART_SSP_PACKET_STATUS & 0x01)) // This cannot be true
 		return;
 	NOP;
 	CLR(USART_SSP_PACKET_STATUS, 1);
