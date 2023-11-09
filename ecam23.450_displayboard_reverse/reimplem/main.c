@@ -145,7 +145,7 @@ void init_hardware_1(void)
 	PIR1 = 0x00;
 	PIR2 = 0x00;
 
-	// Watchdog cofnig
+	// PORTB pullup config
 	WPUB = 0x00;
 
 	// GPIO config

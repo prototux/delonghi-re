@@ -12,21 +12,21 @@ void Clemence(void)
 	// Read status?
 	SSP_PACKET_DATA_12 = 0x00;
 	SSP_PACKET_DATA_18_MASK = 0x00;
-	SSP_PACKET_DATA_12 = Aline();
+	SSP_PACKET_DATA_12 = softi2c_start();
 	SSP_PACKET_DATA_18_MASK = 0x00;
 
 	// read byte?
-	tmp = Alice(0xa0);
+	tmp = softi2c_send_byte(0xa0);
 	SSP_PACKET_DATA_12 += tmp;
 	if (SSP_PACKET_DATA_12 < tmp)
 		SSP_PACKET_DATA_18_MASK += 1;
 
-	tmp = Alice(0x00);
+	tmp = softi2c_send_byte(0x00);
 	SSP_PACKET_DATA_12 += tmp;
 	if (SSP_PACKET_DATA_12 < tmp)
 		SSP_PACKET_DATA_18_MASK += 1;
 
-	tmp = Alice(0xa00);
+	tmp = softi2c_send_byte(0xa0);
 	SSP_PACKET_DATA_12 += tmp;
 	if (SSP_PACKET_DATA_12 < tmp)
 		SSP_PACKET_DATA_18_MASK += 1;
@@ -36,9 +36,9 @@ void Clemence(void)
 	{
 		SSP_PACKET_DATA_12 = 0x00;
 		SSP_PACKET_DATA_18_MASK = 0x00;
-		SSP_PACKET_DATA_12 = Aline();
+		SSP_PACKET_DATA_12 = softi2c_start();
 		SSP_PACKET_DATA_18_MASK = 0x00;
-		tmp += Alice(0xa1);
+		tmp += softi2c_send_byte(0xa1);
 		SSP_PACKET_DATA_12 += tmp;
 		if (SSP_PACKET_DATA_12 < tmp)
 			SSP_PACKET_DATA_18_MASK += 1;
@@ -76,7 +76,7 @@ void Clemence(void)
 		if (EVELISE_UNK1 < SSP_PACKET_DATA_18_MASK)
 			break;
 
-		tmp = Elsa(0x01);
+		tmp = softi2c_read_byte(0x01);
 		CLEMENCE_UNK2 += tmp;
 		if (CLEMENCE_UNK2 < tmp) // we overflowed it, increment unk3
 			CLEMENCE_UNK3 += 1;
@@ -89,12 +89,12 @@ void Clemence(void)
 	} while(true);
 
 	// Same thing than in the loop
-	tmp = Elsa(0x00);
+	tmp = softi2c_read_byte(0x00);
 	CLEMENCE_UNK2 += tmp;
 	if (CLEMENCE_UNK2 < tmp)
 		CLEMENCE_UNK3 += 1;
 
 	// End of transmission?
-	Agathe();
-	Anais();
+	softi2c_end();
+	softi2c_wait();
 }

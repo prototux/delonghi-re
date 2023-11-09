@@ -9,24 +9,24 @@ void Cecile(void)
 	// aka. enable write
 	CLR(PORTB, 1);
 
-	INIT_ST1_UNK1 = Aline();
+	INIT_ST1_UNK1 = softi2c_start();
 
-	INIT_ST1_UNK1 += Alice(SSP_PACKET_DATA_18_TMP);
+	INIT_ST1_UNK1 += softi2c_send_byte(SSP_PACKET_DATA_18_TMP);
 
 	if (INIT_ST1_UNK1 == 0xd0)
 	{
-		INIT_ST1_UNK1 += Alice(USART_LOGIC_UNK15);
+		INIT_ST1_UNK1 += softi2c_send_byte(USART_LOGIC_UNK15);
 	}
 	else if (SSP_PACKET_DATA_18_TMP == 0xa0)
 	{
-		INIT_ST1_UNK1 += Alice(USART_LOGIC_UNK27);
-		INIT_ST1_UNK1 += Alice(USART_LOGIC_UNK15);
+		INIT_ST1_UNK1 += softi2c_send_byte(USART_LOGIC_UNK27);
+		INIT_ST1_UNK1 += softi2c_send_byte(USART_LOGIC_UNK15);
 	}
 
 	if (INIT_ST1_UNK1)
 	{
 		CLEMENCE_UNK1 = 0xff;
-		Agathe();
+		softi2c_end();
 		SET(PORTB, 1); // Disable write again before returning
 		return;
 	}
@@ -35,7 +35,7 @@ void Cecile(void)
 	goto cecile_midloop;
 
 	do{
-		Alice(PACKET_BUFFER[INIT_ST1_UNK1]);
+		softi2c_send_byte(PACKET_BUFFER[INIT_ST1_UNK1]);
 		INIT_ST1_UNK1 += 1;
 
 cecile_midloop: // this is ugly
@@ -60,7 +60,7 @@ cecile_midloop: // this is ugly
 
 	SET(PORTB, 1); // Disable write before finishing
 
-	Anais();
+	softi2c_wait();
 }
 
 // Seems like the read part of the eeprom driver
@@ -72,17 +72,17 @@ void Caroline(void)
 	USART_LOGIC_UNK15 = USART_LOGIC_UNK27;
 	USART_LOGIC_UNK14 = USART_LOGIC_UNK28;
 	CAROLINE_UNK1 = 0x00;
-	CAROLINE_UNK1 = Aline();
+	CAROLINE_UNK1 = softi2c_start();
 
-	tmp = Alice(USART_LOGIC_UNK29);
+	tmp = softi2c_send_byte(USART_LOGIC_UNK29);
 	CAROLINE_UNK1 += tmp;
 	if (USART_LOGIC_UNK29 != 0xd0 && USART_LOGIC_UNK29 == 0xda0)
 	{
-		CAROLINE_UNK1 += Alice(USART_LOGIC_UNK14);
-		CAROLINE_UNK1 += Alice(USART_LOGIC_UNK15);
+		CAROLINE_UNK1 += softi2c_send_byte(USART_LOGIC_UNK14);
+		CAROLINE_UNK1 += softi2c_send_byte(USART_LOGIC_UNK15);
 	}
 	else if (USART_LOGIC_UNK29 != 0xd0 && USART_LOGIC_UNK29 != 0xda0)
-		CAROLINE_UNK1 += Alice(USART_LOGIC_UNK15);
+		CAROLINE_UNK1 += softi2c_send_byte(USART_LOGIC_UNK15);
 
 	if (CAROLINE_UNK1)
 	{
@@ -91,9 +91,9 @@ void Caroline(void)
 	}
 
 	CAROLINE_UNK1 = 0x00;
-	CAROLINE_UNK1 = Aline()
+	CAROLINE_UNK1 = softi2c_start()
 
-	CAROLINE_UNK1 = Alice(0x01);
+	CAROLINE_UNK1 = softi2c_send_byte(0x01);
 
 	if (CAROLINE_UNK1)
 	{
@@ -106,7 +106,7 @@ void Caroline(void)
 	do
 	{
 		if !(CAROLINE_UNK1)
-			PACKET_BUFFER[CAROLINE_UNK1] = Elsa(0x01);
+			PACKET_BUFFER[CAROLINE_UNK1] = softi2c_read_byte(0x01);
 
 		if (USART_LOGIC_UNK29 == 0xd0)
 			ENTRY_SUB2_UNK1 = 0x07;
@@ -122,10 +122,10 @@ void Caroline(void)
 
 	} while ((EVELISE_UNK1 ^ 0x80) - MLOGIC_SUB2_UNK1 || ENTRY2_SUB2_UNK1 - CAROLINE_UNK1)
 
-	PACKET_BUFFER[CAROLINE_UNK1] = Elsa(0x00);
+	PACKET_BUFFER[CAROLINE_UNK1] = softi2c_read_byte(0x00);
 
 	// End com?
-	Agathe();
-	Anais();
+	softi2c_end();
+	softi2c_wait();
 }
 

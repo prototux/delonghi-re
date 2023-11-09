@@ -9,15 +9,15 @@ void Eleonore(void)
 		SET(PORTB, 3);
 		SET(PORTB, 4);
 		CLR(TRISB, 3);
-		Anais();
+		softi2c_wait();
 		CLR(PORTB, 3);
-		Anais();
+		softi2c_wait();
 		CLR(PORTB, 4);
 		USART_LOGIC_30 += 1;
 	} while (USART_LOGIC_30 < 0x9);
 
-	// Init LCD, calls Agathe with whatever is in W, so 0x09?
-	Agathe(0x09);
+	// Init LCD, calls softi2c_end with whatever is in W, so 0x09?
+	softi2c_end(0x09);
 
 	// Init E2P?
 	USART_LOGIC_UNK27 = 0x02;
@@ -83,7 +83,7 @@ void init_something_2(void)
 	SET(PACKET_BUFFER, 7);
 	SSP_PACKET_DATA_12 = 0x00;
 	SSP_PACKET_DATA_18_MASK = 0x00;
-	SSP_PACKET_DATA_18_TMP =- 0xd0;
+	SSP_PACKET_DATA_18_TMP = 0xd0;
 	Cecile();
 
 	// Wait some cpu cycles

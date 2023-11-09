@@ -138,19 +138,19 @@ void Adele(char param)
 {
 	CHECKSUM_UNK2 = param;
 
-	ADELE_UNK1 = Aline(); // maybe Aline(param)?
-	ADELE_UNK1 = Alice(0x78);
+	ADELE_UNK1 = softi2c_start(); // maybe softi2c_start(param)?
+	ADELE_UNK1 = softi2c_send_byte(0x78);
 
 	if (CHECKSUM_UNK2 == 0x01)
-		ADELE_UNK1 = Alice(0x80);
+		ADELE_UNK1 = softi2c_send_byte(0x80);
 
 	if (CHECKSUM_UNK2 == 0x00)
 	{
 		ADELE_UNK1 = 0x00;
-		ADELE_UNK1 = Alice(0x40);
+		ADELE_UNK1 = softi2c_send_byte(0x40);
 	}
 
-	Alice(CHECKSUM_UNK1);
+	softi2c_send_byte(CHECKSUM_UNK1);
 
-	Agathe();
+	softi2c_end();
 }
