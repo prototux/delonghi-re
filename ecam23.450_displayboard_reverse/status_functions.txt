@@ -22,7 +22,7 @@ DONE	Elodie
 DONE	Eloise
 DONE	Elona
 DONE	Elsa
-----	Emilie
+DONE	Emilie
 DONE	Emma
 DONE	Emy
 DONE	Estelle

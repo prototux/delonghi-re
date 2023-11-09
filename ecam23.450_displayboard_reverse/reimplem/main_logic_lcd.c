@@ -212,8 +212,103 @@ void Emilie(char param)
 			CHECKSUM = 0x00;
 			do
 			{
-				// TODO: finish
-			} while (turue);
+				ENTRY_SUB2_UNK! = 0x10;
+				EVELISE_UNK1 = 0x00;
+				ENTRY_SUB2_UNK1 -= CLARA_UNK1;
+				EVELISE_UNK1 -= 1;
+				EMILIE_UNK2 = CHECKSUM_UNK1;
+				EMILIE_UNK3 = 0x00;
+				MLOGIC_SUB2_UNK1 = EMILIE_UNK3 ^ 0x80; // what?
+				if ((EVELISE_UNK1 ^ 0x80) < 0x81 ||
+						((EVELISE_UNK1 ^ 0x80) == 0x80 && 0x10 - EMILIE_UNK1 <= CHECKSUM_UNK1))
+					break;
+
+				CLEMENCE_UNK3 = PACKET_BUFFER[CLARA_UNK1 + MLOGIC_SUB2_UNK4];
+				EMILIE_ARRAY[MLOGIC_SUB2_UNK4] = CLEMENCE_UNK3;
+
+				MLOGIC_SUB2_UNK4 += 1;
+			} while (true);
+
+			EVELISE_UNK1 = CLARA_UNK4;
+			ENTRY_SUB2_UNK1 = CLARA_UNK3;
+			ENTRY_SUB2_UNK1 += 0x10;
+			if (0xef < CLARA_UNK3)
+				EVELISE_UNK1 += 1;
+			USART_LOGIC_UNK27 = ENTRY_SUB2_UNK1;
+			USART_LOGIC_UNK28 = EVELISE_UNK1;
+			USART_LOGIC_UNK29 = 0xa0;
+			Caroline();
+
+			CHECKSUM_UNK1 = 0x00;
+			do
+			{
+				EMILIE_UNK2 = EMILIE_UNK1;
+				EMILIE_UNK3 = 0x00;
+				EMILIE_UNK2 += 0x04;
+				if (EMILIE_UNK2 < 0x04) // we overflowed it
+					EMILIE_UNK3 += 1;
+
+				EMILIE_UNK4 = CHECKSUM_UNK1;
+				EMILIE_UNK5 = 0x00;
+				ENTRY_SUB2_UNK1 = EMILIE_UNK5 ^ 0x80; // what again?
+				if ((EMILIE_UNK3 ^ 0x80) < 0x81 || ((EMILIE_UNK3 ^ 0x80) == 0x8 && EMILIE_UNK2 <= CHECKSUM_UNK1)
+					break;
+
+				EMILIE_UNK2 = PACKET_BUFFER[CHECKSUM_UNK1];
+				EMILIE_ARRAY[(CLARA_UNK1 - 0x10) + CHECKSUM_UNK1] = EMILIE_UNK2;
+
+				CHECKSUM_UNK1 += 1;
+			} while (true);
 		}
+		else
+		{
+			INIT_ST1_UNK3 = ELODIE_UNK3;
+
+			CHECKSUM_UNK1 = 0x00;
+			do
+			{
+				EMILIE_UNK2 = CLARA_ARRAY[INIT_ST1_UNK3];
+				EMILIE_ARRAY[CHECKSUM_UNK1] = EMILIE_UNK2;
+				INIT_ST1_UNK3 += 1;
+				if (CLARA_UNK2 <= INIT_ST1_UNK3)
+					INIT_ST1_UNK3 = 0x00;
+				CHECKSUM_UNK1 += 1;
+			} while(CHECKSUM_UNK1 < 0x14);
+
+			ELODIE_UNK3 += 1;
+			if (CLARA_UNK2 <= ELODIE_UNK3)
+				ELODIE_UNK3 = 0x00;
+		}
+	}
+	else
+	{
+		EMILIE_UNK2 = INIT_ST1_UNK2; // this is param
+		EMILIE_UNK3 = 0x00;
+		EMILIE_UNK2 <<= 1;
+		EMILIE_UNK3 <<= 1;
+		EMILIE_UNK2 += 0x70;
+		if (0x8f < EMILIE_UNK2)
+			EMILIE_UNK3 += 1;
+
+		EMILIE_UNK3 += 0xfe;
+		FETCH_ADDR_H = EMILIE_UNK3 + 0x08;
+		if (EMILIE_UNK2 + 0x01 < 0x01) // we overflowed
+			FETCH_ADDR_H += 1;
+		EMILIE_UNK4 = fetch_data_withparam(EMILIE_UNK2 + 0x01);
+		EMILIE_UNK5 = fetch_data(); // what? it reuses FETCH_ADDR_L from the previous call?
+		CHECKSUM_UNK2 = EMILIE_UNK4;
+		ADELE_UNK1 = EMILIE_UNK5;
+
+		CHECKSUM_UNK1 = 0x00;
+		do
+		{
+			FETCH_ADDR_L = CHCKSUM_UNK1 + CHECKSUM_UNK2;
+			FETCH_ADDR_H = ADELE_UNK1;
+			if (CHECKSUM_UNK1 + CHECKSUM_UNK2 < CHECKSUM_UNK1) // we overflowed
+				FETCH_ADDR_H += 1;
+			EMILIE_UNK2 = fetch_data_withparam(FETCH_ADDR_L); // this is stupid!
+			EMILIE_ARRAY[CHECKSUM_UNK1] = EMILIE_UNK2;
+			CHECKSUM_UNK1 += 1;
+		} while (CHECKSUM_UNK1 < 0x14);
 	}
 }
