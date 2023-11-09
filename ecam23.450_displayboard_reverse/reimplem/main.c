@@ -3,9 +3,6 @@
 // Entrypoint (at addr 0x0000)
 void _entry(void) { goto main; }
 
-// Const data for memory bank init
-const char bank0_init_data[3] = {0x08, 0x02, 0x32}; // this is at 0x00bf
-
 // Real main
 void main(void)
 
