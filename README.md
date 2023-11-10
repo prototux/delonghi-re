@@ -1,5 +1,7 @@
 # DeLonghi's automatic espresso machine reverse engineering
 
+tl;dr: We're reverse engineering the ECAM 23.450 display board firmware to reimplement it's features on a custom board, the work being done is [here](https://github.com/prototux/delonghi-re/tree/reimplem-clean/ecam23.450_displayboard_reverse/reimplem)
+
 ## Intro
 
 This project is an effort to reverse engineer the DeLonghi's automatic espresso machines to ideally make a open hardware and open source controller board that enable easy modding and experimentation using the coffee machines.
