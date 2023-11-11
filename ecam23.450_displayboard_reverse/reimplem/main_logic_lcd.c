@@ -11,7 +11,7 @@ void Emma(char param)
 		SSP_PACKET_DATA_12 = 0x53;
 
 	CHECKSUM_UNK1 = USART_LOGIC_UNK5 | 0x80; // = param
-	Adele(0x01);
+	dev_lcd_send(0x01);
 
 	SSP_PACKET_DATA_18_MASK = 0; // iterator
 	do
@@ -34,7 +34,7 @@ void Emma(char param)
 		if (SSP_PACKET_DATA_18_TMP <= SSP_PACKET_DATA) // tmp
 		{
 			CHECKSUM_UNK1 = BIGARRAY[SSP_PACKET_DATA_18_MASK];
-			Adele(0x00);
+			dev_lcd_send(0x00);
 		}
 
 		// Copy byte from BIGARRAY to LCDARRAY2
@@ -79,7 +79,7 @@ void Elodie(void)
 
 			CHECKSUM_UNK1 = (ELODIE_UNK2 + 0x40) | 0x80;
 
-			Adele(0x01);
+			dev_lcd_send(0x01);
 
 			USART_LOGIC_UNK4 = ELODIE_UNK2;
 
@@ -100,7 +100,7 @@ void Elodie(void)
 
 				CHECKSUM_UNK1 = EMILIE_ARRAY[USART_LOGIC_UNK4];
 
-				Adele(0x00);
+				dev_lcd_send(0x00);
 				USART_LOGIC_UNK1 += 1;
 			} while (true);
 
@@ -127,7 +127,7 @@ void Elodie(void)
 
 		CHECKSUM_UNK1 = ELODIE_UNK1 | 0x80;
 
-		Adele(0x01);
+		dev_lcd_send(0x01);
 
 		USART_LOGIC_UNK4 = ELODIE_UNK1;
 
@@ -150,7 +150,7 @@ void Elodie(void)
 
 			CHECKSUM_UNK1 = EMILIE_ARRAY[USART_LOGIC_UNK4];
 
-			Adele(0x00);
+			dev_lcd_send(0x00);
 
 			USART_LOGIC_UNK4 += 1;
 		} while (true);

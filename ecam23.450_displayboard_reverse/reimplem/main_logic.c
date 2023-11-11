@@ -1214,7 +1214,7 @@ main_logic_ret:
 		HW_INIT2_UNK10 = 0x1e;
 		HW_INIT2_UNK8 = 0x32;
 		HW_INIT2_UNK8 = 0x32;
-		Emy(0xff);
+		dev_lcd_init(0xff);
 
 		USART_PACKET_CHECKSUM = 0x00;
 		do

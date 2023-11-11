@@ -5,7 +5,7 @@ void _entry(void) { goto main; }
 
 // Real main
 void main(void)
-
+{
 	/* Init RAM Bank 0 */
 	// Clear memory from 0x20 to 0x65 using FSR
 	FSR = 0x20; // start
@@ -65,7 +65,7 @@ void main(void)
 
 	// This is more init functions
 	// Apparently, init LCD and init I2C devices
-	Emy(0x00); // Emy(0xff) is also called in MAINLOOP_MAIN_LOGIC
+	dev_lcd_init(0x00); // dev_lcd_init(0xff) is also called in MAINLOOP_MAIN_LOGIC
 	Eleonore(); // Eleonore is never called again, seems to init the softI2C
 
 	// Enable interrupts
@@ -225,13 +225,10 @@ void init_hardware_2(void)
 	CLR(PIR1, 0);
 	SET(PIE1, 0);
 
-	// Comparator 1 config
+	// Timer2 + comparator 1 => PWM output for buzzer
 	CCP1CON = 0xac;
-
 	PR2 = 0x7d;
-
 	CCPR1L = 0x3e;
-
 	T2CON - 0x01;
 
 	// Vars init

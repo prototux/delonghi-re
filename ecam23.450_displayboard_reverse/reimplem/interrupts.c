@@ -83,7 +83,7 @@ void interrupt_handler_ssp(void)
 		return;
 	}
 
-	// When you've send all the packets apparently
+	// When you've received all the packets apparently
 
 	// Disable SSP interrupts
 	CLR(PIE1, 3);
@@ -102,18 +102,19 @@ void interrupt_handler_timer0(void)
 	TMR0 = 0xfd;
 	CLR(INTCON, TMR0IF);
 
-	// This reset the comparator, config timer2 and optionally enable buzzer
+	// This enable or dizable the buzzer @ around 4khz (8mhz OSC, prescaler 4) using the PWM
 	if (TIMER1_UNK2 & 0x04 && (ENTRY_DATA_UNK2 == 0x0a || ENTRY_DATA_UNK2 == 0x32))
 	{
-		// Reset comparator and timer2
+		// Set the PWM (CCP1) and enable timer 2
 		CCP1CON = 0xac;
 		SET(T2CON, 2);
 	}
 	else if ( !(TIMER1_UNK2 & 0x04) || (TIMER_UNK2 & 0x04 && (ENTRY_DATA_UNK2 == 0x00 || ENTRY_DATA_UNK2 == 0xff)) )
 	{
-		CCP1CON = 0x00;
+		// Disable timer2, reset CCP1 and disable the buzzer (active low)
 		CLR(T2CON, 2);
-		SET(PORTC, 5); // Enable buzzer
+		CCP1CON = 0x00;
+		SET(PORTC, 5);
 	}
 
 	// No idea what that part does

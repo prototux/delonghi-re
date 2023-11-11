@@ -65,9 +65,9 @@ char USART_LOGIC_UNK29; // 0x5e
 char CAROLINE_UNK1; // 0x5f
 char CAROLINE_UNK2; // 0x60
 char CAROLINE_UNK3; // 0x61
-char SOFTI2C_UNK1;// 0x62
-char SOFTI2C_UNK2;// 0x63
-char SOFTI2C_UNK3;// 0x64
+char softi2c_param_cpy;// 0x62
+char softi2c_tmp;// 0x63
+char softi2c_read_buffer;// 0x64
 char USART_RX_RCVD_BYTE; // 0x65
 // 0x66 is unused
 // 0x67 is unused

@@ -2,7 +2,7 @@
 
 // Seems to be an init function?
 // Is called in main with 0x00 but also in MAINLOOP_MAIN_LOGIC/BGT4-ret, with 0xff
-void Emy(char param)
+void dev_lcd_init(char param)
 {
 	// Param == "do we need to reset the LCD" apparently
 	USART_LOGIC_UNK4 = param;
@@ -21,14 +21,14 @@ void Emy(char param)
 	}
 
 	CHECKSUM_UNK1 = 0x38;
-	Adele(0x01);
+	dev_lcd_send(0x01);
 
 	// Send the first init string
 	// should be 0x1f, 0x1f, 0x1f, 0x1f, 0x00, 0x00, 0x00, 0x00
 	USART_LOGIC_UNK5 = 0x00;
 	do {
 		CHECKSUM_UNK1 = USART_LOGIC_UNK5 | 0x40;
-		Adele(0x01);
+		dev_lcd_send(0x01);
 
 		SSP_PACKET_DATA_18_MASK = USART_LOGIC_UNK5;
 		SSP_PACKET_DATA_18_TMP = 0x00;
@@ -42,7 +42,7 @@ void Emy(char param)
 		CHECKSUM_UNK1 = fetch_data_withparam(USART_LOGIC_UNK5 + 0x36);
 
 		// Send it (CHECKSUM_UNK1 is hidden param of adele)
-		Adele(0x00);
+		dev_lcd_send(0x00);
 
 		USART_LOGIC_UNK5 += 1;
 	} while (USART_LOGIC_UNK5 < 0x08);
@@ -52,7 +52,7 @@ void Emy(char param)
 	USART_LOGIC_UNK5 = 0x00;
 	do {
 		CHECKSUM_UNK1 = USART_LOGIC_UNK5 + 0x08 | 0x40;
-		Adele(0x01);
+		dev_lcd_send(0x01);
 
 		SSP_PACKET_DATA_18_MASK = USART_LOGIC_UNK5;
 		SSP_PACKET_DATA_18_TMP = 0x00;
@@ -66,7 +66,7 @@ void Emy(char param)
 		CHECKSUM_UNK1 = fetch_data_withparam(USART_LOGIC_UNK5 + 0x3f);
 
 		// Send it (CHECKSUM_UNK1 is hidden param of adele)
-		Adele(0x00);
+		dev_lcd_send(0x00);
 
 		USART_LOGIC_UNK5 += 1;
 	} while (USART_LOGIC_UNK5 < 0x08);
@@ -76,7 +76,7 @@ void Emy(char param)
 	USART_LOGIC_UNK5 = 0x00;
 	do {
 		CHECKSUM_UNK1 = USART_LOGIC_UNK5 + 0x10 | 0x40;
-		Adele(0x01);
+		dev_lcd_send(0x01);
 
 		SSP_PACKET_DATA_18_MASK = USART_LOGIC_UNK5;
 		SSP_PACKET_DATA_18_TMP = 0x00;
@@ -90,7 +90,7 @@ void Emy(char param)
 		CHECKSUM_UNK1 = fetch_data_withparam(USART_LOGIC_UNK5 + 0x48);
 
 		// Send it (CHECKSUM_UNK1 is hidden param of adele)
-		Adele(0x00);
+		dev_lcd_send(0x00);
 
 		USART_LOGIC_UNK5 += 1;
 	} while (USART_LOGIC_UNK5 < 0x08);
@@ -100,7 +100,7 @@ void Emy(char param)
 	USART_LOGIC_UNK5 = 0x00;
 	do {
 		CHECKSUM_UNK1 = USART_LOGIC_UNK5 + 0x18 | 0x40;
-		Adele(0x01);
+		dev_lcd_send(0x01);
 
 		SSP_PACKET_DATA_18_MASK = USART_LOGIC_UNK5;
 		SSP_PACKET_DATA_18_TMP = 0x00;
@@ -114,36 +114,38 @@ void Emy(char param)
 		CHECKSUM_UNK1 = fetch_data_withparam(USART_LOGIC_UNK5 + 0x48);
 
 		// Send it (CHECKSUM_UNK1 is hidden param of adele)
-		Adele(0x00);
+		dev_lcd_send(0x00);
 
 		USART_LOGIC_UNK5 += 1;
 	} while (USART_LOGIC_UNK5 < 0x08);
 
 	// Send other things
-	CHECKSUM_UNK1 = 0x39; Adele(0x01);
-	CHECKSUM_UNK1 = 0x1c; Adele(0x01);
-	CHECKSUM_UNK1 = 0x5f; Adele(0x01);
-	CHECKSUM_UNK1 = 0x0c; Adele(0x01);
-	CHECKSUM_UNK1 = 0x06; Adele(0x01);
+	CHECKSUM_UNK1 = 0x39; dev_lcd_send(0x01);
+	CHECKSUM_UNK1 = 0x1c; dev_lcd_send(0x01);
+	CHECKSUM_UNK1 = 0x5f; dev_lcd_send(0x01);
+	CHECKSUM_UNK1 = 0x0c; dev_lcd_send(0x01);
+	CHECKSUM_UNK1 = 0x06; dev_lcd_send(0x01);
 	if (USART_LOGIC_UNK4) // param
 		return;
-	CHECKSUM_UNK1 = 0x01; Adele(0x01);
-	CHECKSUM_UNK1 = 0x01; Adele(0x01);
+	CHECKSUM_UNK1 = 0x01; dev_lcd_send(0x01);
+	CHECKSUM_UNK1 = 0x01; dev_lcd_send(0x01);
 }
 
 
 // This is what sends data to the LCD
 // hidden param: CHECKSUM_UNK1
-void Adele(char param)
+void dev_lcd_send(char param)
 {
 	CHECKSUM_UNK2 = param;
 
-	ADELE_UNK1 = softi2c_start(); // maybe softi2c_start(param)?
+	ADELE_UNK1 = softi2c_start();
 	ADELE_UNK1 = softi2c_send_byte(0x78);
 
+	// Set DDRAM address?
 	if (CHECKSUM_UNK2 == 0x01)
 		ADELE_UNK1 = softi2c_send_byte(0x80);
 
+	// This displays a char/data send
 	if (CHECKSUM_UNK2 == 0x00)
 	{
 		ADELE_UNK1 = 0x00;

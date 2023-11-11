@@ -31,6 +31,9 @@ void POWERBOARD_COM_INIT(char uart_or_i2c)
 		// Enable RX and TX interrupts
 		SET(PIE1, 5);
 		SET(PIE1, 4);
+
+		// Change the 74HC4052 to use X0/Y0 aka "12v lines"
+		CLR(PORTC, 3);
 	}
 	else // Red chose I2C
 	{
