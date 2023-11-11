@@ -59,7 +59,7 @@ void main(void)
 	init_hardware_1();
 	SET(PORTA, 6); // Enable LCD backlight
 	CLRWDT();
-	init_hardware_2();
+	init_timers();
 
 	init_something_2(); // This is probably power board communication
 
@@ -130,30 +130,61 @@ char init_ram_with_data(char end)
 // First part of the hardware init
 void init_hardware_1(void)
 {
+	// NB: CONFIG1 register @ 0x2007 is set as 0c33cc
+	// * In-circuit debugger disabled
+	// * Fail-Safe clock and External/Internal switchover are disabled
+	// * Brown-out reset is enabled
+	// * Data and Program memory code protection are disabled
+	// * RE3 function is digital input
+	// * Power-up timer is disabled, Watchdog timer is enabled
+	// * (FOSC) RA6 and RA7 are GPIO, use internal oscillator
+
 	// Disable interrupts (should already be disabled by default, but oh well)
 	CLR(INTCON, GIE);
 	CLR(INTCON, PEIE);
 
-	OSCON = 0x70;
+	// Configure the internal oscillator:
+	// * 8mhz clock, using the internal ocillator
+	// * HFINTOSC and LFINTOSC are not stable
+	// * System clock is defined by FOSC
+	OSCCON = 0x70;
+
+	// Configure the option register:
+	// * Disable PORTB weak pull-ups
+	// * Interrupt on rising edge of RBO/INT (useless, it is NC)
+	// * Timer0 on internal clock (low-to-high on RA4, but useless here)
+	// * Prescaler assigned to Timer0
+	// * Prescaler rate 1:128 (would be 1:64 on WDT)
 	OPTION_REG = 0xc6;
+
+	// Configure the interrupts: for now, disable all interrupts
+	// These should already be the case at startup, but well...
 	INTCON = 0x00;
 
-	// Interrupts config
+	// Disable all interrupt sources
 	PIE1 = 0x00;
 	PIE2 = 0x00;
+
+	// Power control config: Disable software Brown-Out Reset
 	PCON = 0x00;
+
+	// Reset all interrupt flags
 	PIR1 = 0x00;
 	PIR2 = 0x00;
 
-	// PORTB pullup config
+	// PORTB weak pull-ups config: disable all
 	WPUB = 0x00;
 
-	// GPIO config
+	// PORTA is all outputs for now
 	TRISA = 0x00;
+
+	// PORTB is all outputs for now, no interrupts on PORTB
 	TRISB = 0xe0;
 	IOCB = 0x00;
 
-	// Timer 0 config
+	// Timer 0 config:
+	// * Count for 2 cycles (0xfd to overflow)
+	// * Disables the TMR0 interrupt for now
 	TMR0 = 0xfd;
 	CLR(INTCON, TMR0IE);
 
@@ -177,7 +208,7 @@ void init_hardware_1(void)
 
 	ANSEL = 0x00;
 
-	// LCD Config
+	// Completly disable LCD driver
 	LCDCON = 0x00;
 	LCDSE0 = 0x00;
 	LCDSE1 = 0x00;
@@ -209,8 +240,14 @@ void init_hardware_1(void)
 
 
 // Second part of the hardware init
-void init_hardware_2(void)
+void init_timers(void)
 {
+	// Configure the option register:
+	// * Disable PORTB weak pull-ups
+	// * Interrupt on rising edge of RBO/INT (useless, it is NC)
+	// * Timer0 on internal clock (low-to-high on RA4, but useless here)
+	// * Prescaler assigned to Timer0
+	// * Prescaler rate 1:128 (would be 1:64 on WDT)
 	OPTION_REG = 0xc6;
 
 	// Timer 0 config

@@ -53,7 +53,7 @@ NULL  0x1a50-0x1e5c
 ----- 0x1e7f-0x1e8a => unknown/uncalled function
 
 # End of flash memory
-NULL  0x2000-0x2003
+NULL  0x2000-0x2003 -> this is beyond the program memory space, this is special config memory space
 NULL  0x2003-0x2006 => 0x00 array
-===== 0x2007-0x2007 => single word (0x33cc)
+CONF  0x2007-0x2007 => Config register (0x33cc)
 NULL  0x2008-0x2FFF => end of flash padding
