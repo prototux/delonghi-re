@@ -110,7 +110,7 @@ static void uart_send(uint8_t len)
 /* Replies are built over the request, so uart_buf[2] (command) and
  * uart_buf[3..4] (address) are echoed as received. */
 
-/* 0x04AD: A0 05 26 sum_hi sum_lo chk */
+/* 0x04AD: A0 05 B3 sum_hi sum_lo chk */
 void uart_reply_checksum(void)
 {
     uart_buf[0] = 0xA0;
@@ -146,7 +146,9 @@ void uart_reply_read(void)
     uart_send(uart_buf[1] + 1);
 }
 
-/* Handle a complete service mode frame (0x0690..0x0722) */
+/* Handle a complete service mode frame (0x0690..0x0722).
+ * The original switch is a chain of XORLW 0x85 / 0x10 / 0x26 on the same W,
+ * so the command codes are 0x85, 0x95 and 0xB3. */
 static void uart_handle_frame(void)
 {
     uint8_t i, len = uart_buf[1];
@@ -170,7 +172,7 @@ static void uart_handle_frame(void)
         i2c_write_block(I2C_EEPROM, ee_addr_hi, ee_addr_lo);
         break;
 
-    case 0x10:                                  /* read 16 EEPROM bytes */
+    case 0x95:                                  /* read 16 EEPROM bytes */
         if (len != 0x05)
             break;
         ee_addr_hi = uart_buf[3];
@@ -179,7 +181,7 @@ static void uart_handle_frame(void)
         uart_reply_read();
         break;
 
-    case 0x26:                                  /* EEPROM checksum */
+    case 0xB3:                                  /* EEPROM checksum */
         if (len != 0x03)
             break;
         eeprom_checksum();

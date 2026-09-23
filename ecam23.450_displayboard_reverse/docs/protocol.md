@@ -216,11 +216,15 @@ The PIC transmits a 9th bit set to 1, so what goes out looks like 8N2. It receiv
 
 | request | reply | action |
 |---------|-------|--------|
-| `0A 05 10 AH AL chk` | `A0 15 95 AH AL d0..d15 chk` | read 16 EEPROM bytes at AH:AL |
+| `0A 05 95 AH AL chk` | `A0 15 95 AH AL d0..d15 chk` | read 16 EEPROM bytes at AH:AL |
 | `0A 15 85 AH AL d0..d15 chk` | `A0 06 85 AH AL ok chk` | write 16 bytes (ok = 1). If the EEPROM is still busy with the previous write (~5 ms): ok = 0, nothing written |
-| `0A 03 26 chk` | `A0 05 26 SH SL chk` | 16-bit sum of the first 16 KiB (EEPROM byte 0 < 9) or 32 KiB of the EEPROM |
+| `0A 03 B3 chk` | `A0 05 B3 SH SL chk` | 16-bit sum of the first 16 KiB (EEPROM byte 0 < 9) or 32 KiB of the EEPROM |
 
-For example, to read the first message of the English table: `0A 05 10 00 14 5E`.
+The command byte is the same in the request and the reply.
+The firmware tests it with a chain of `XORLW 0x85 / 0x10 / 0x26` on the same W register, so the three codes are 0x85, 0x95 and 0xB3 (an earlier version of this document read them as 0x85, 0x10 and 0x26).
+
+For example, to read the first message of the English table: `0A 05 95 00 14 DB`.
+This was verified with the emulator against the original firmware.
 
 ## 3. What a replacement display board has to do
 

@@ -22,7 +22,18 @@ This document goes with the C reimplementation in `reimplem/`. The power board p
 | RC5 | buzzer | CCP1 PWM, ~3.97 kHz, 50 % |
 | RC6 / RC7 | UART TX/RX or SPI SCK/SDI | through the 74HC4052 |
 
-The backlight polarity is inferred. At power-up the firmware drives RA6 high, which leaves it dark until the UI runs. In standby the firmware stops the PWM (RA6 high) when `dim_timer` runs out and restarts it when a key is pressed. In normal operation the PWM runs at 100 % (RA6 low). The LEDs and the cup light follow the same pattern. It is worth checking on the schematic.
+The polarities are confirmed by the schematic (`files/machines/ECAM_23.450/display_board_schematics.pdf`):
+- The rows (Q4/Q7/Q8) and LEDs (Q5/Q6) are driven through BC807 PNP transistors, and the backlight (Q2) and cup light (Q1) through BCP51 PNPs, on a −5 V supply, so they are all **active low**.
+- The key columns and encoder contacts read 1 when closed.
+
+In standby the firmware stops the backlight PWM (RA6 high, backlight off) when `dim_timer` runs out, and restarts it when a key is pressed.
+
+The schematic also names the keys:
+- SW2 "Heißwasser / Menü bestätigen" (hot water = OK);
+- SW4 "Spülen / Menü verlassen" (rinse = ESC, called CLEAN in the C and in the English texts);
+- SW1 on the knob, "Kaffeestärke" (push = coffee strength), where rotating sets the quantity or menu item.
+
+The LCD is a TM202SIFSUGWA (2×20, ST7036i) and the RTC an M41T00.
 
 **Oscillator and config:** internal RC at 8 MHz (2 MIPS). Config word `0x33CC`: INTOSCIO, WDT on, power-up timer on, MCLR off (RE3 is an input), BOR on, no code protection.
 
@@ -31,7 +42,7 @@ The backlight polarity is inferred. At power-up the firmware drives RA6 high, wh
 | address | device | use |
 |---------|--------|-----|
 | 0x78 | ST7036 LCD controller | 2 × 20 characters |
-| 0xD0 | M41T00-compatible RTC | 8 BCD registers |
+| 0xD0 | M41T00 RTC | 8 BCD registers |
 | 0xA0 | M24256 EEPROM | 32 KiB: texts and header |
 
 The SSP module is **not** used for I2C. It is the SPI link to the power board.
@@ -142,7 +153,7 @@ The progress bar uses 0xFF (full block) on `_`. The level bars use 0xFD / 0x6F f
 
 - The SSP runs as an **SPI master**, not I2C. On the PIC16F91x, SCK/SDI share RC6/RC7 with the UART and **SDO is RC4**. RC4 is therefore the SPI data output to the power board, not an unknown GPIO.
 - The UART only exists for the EEPROM service mode. The packet types in `serial_com.md` are service replies:
-  - type 1 is the reply to command 0x26 (EEPROM sum);
+  - type 1 is the reply to command 0xB3 (EEPROM sum);
   - type 2 is the reply to the write command;
   - type 3 is the reply to the read command.
 - The RX header is 0x0A and the TX header is 0xA0. Both checksums are seeded with 0x55: SPI sums the bytes, the UART XORs them.

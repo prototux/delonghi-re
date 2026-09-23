@@ -1,7 +1,7 @@
 /*
  * Hardware of the ECAM 23.450 display board: PIC16F916, 8 MHz internal RC.
  *
- * Pin map (see docs/hardware.md):
+ * Pin map (see docs/firmware.md; polarities from the schematic):
  *   RA0..RA2  keypad rows (driven low one at a time)
  *   RA3       ESC LED            (active low, 50% PWM when lit)
  *   RA4       OK LED             (active low, 50% PWM when lit)

@@ -13,12 +13,12 @@ The full description is in `ecam23.450_displayboard_reverse/docs/protocol.md`.
 - The **UART** (9600 baud) is only a service mode, entered by holding the encoder button at power-up. A PC tool uses it to read and write the text EEPROM:
   - requests start with 0x0A, replies with 0xA0;
   - checksum = 0x55 XOR bytes 0..len-1;
-  - commands: 0x10 read 16 bytes, 0x85 write 16 bytes, 0x26 EEPROM sum.
+  - commands: 0x95 read 16 bytes, 0x85 write 16 bytes, 0xB3 EEPROM sum.
 
 The "packet types" previously listed in this file were the replies of that service mode:
 
 | earlier name | actually |
 |--------------|----------|
-| type 1 | reply to 0x26 (EEPROM sum) |
+| type 1 | reply to 0xB3 (EEPROM sum) |
 | type 2 | reply to 0x85 (write) |
-| type 3 | reply to 0x10 (read) |
+| type 3 | reply to 0x95 (read) |
