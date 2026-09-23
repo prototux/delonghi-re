@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ECAM 23.450 Emulator</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>ECAM 23.450 display board <span>emulator</span></h1>
+  <div id="status" class="status">loading firmware…</div>
+</header>
+
+<main>
+  <!-- ============================== machine front ============================== -->
+  <section class="machine">
+    <div class="bezel">
+      <div class="face">
+        <div class="lcd-frame">
+          <canvas id="lcd" width="492" height="84" aria-label="LCD"></canvas>
+        </div>
+
+        <div class="controls">
+          <div class="col">
+            <button class="key" data-key="onoff" title="On / Off  [Q]">
+              <svg viewBox="0 0 32 32"><path d="M16 5v10"/><path d="M9.5 9.5a9 9 0 1 0 13 0"/></svg>
+            </button>
+            <label>On / Off</label>
+            <button class="key" data-key="menu" title="P (menu)  [W]">
+              <svg viewBox="0 0 32 32"><text x="16" y="23" text-anchor="middle">P</text></svg>
+            </button>
+            <label>P · Menu</label>
+            <button class="key" data-key="rinse" title="Rinse / ESC  [E]">
+              <svg viewBox="0 0 32 32"><path d="M9 6h14"/><path d="M16 6v5"/><path d="M10 17q2 4 0 6q-2-2 0-6z"/><path d="M16 15q2 4 0 6q-2-2 0-6z"/><path d="M22 17q2 4 0 6q-2-2 0-6z"/></svg>
+            </button>
+            <label>Rinse · ESC</label>
+          </div>
+
+          <div class="knob-area">
+            <div id="knob" class="knob" title="Rotate: drag / wheel / ←→ · Push: click centre / ↓">
+              <div class="knob-ring" id="knobRing">
+                <div class="knob-mark"></div>
+              </div>
+              <div class="knob-cap" id="knobCap"><span>☕</span></div>
+            </div>
+            <div class="knob-hint"><button id="ccw" aria-label="counter-clockwise">◀</button>
+              <span>strength · quantity</span><button id="cw" aria-label="clockwise">▶</button></div>
+          </div>
+
+          <div class="col">
+            <button class="key" data-key="cup1" title="1 cup  [I]">
+              <svg viewBox="0 0 32 32"><path d="M9 12h12v7a6 6 0 0 1-6 6h0a6 6 0 0 1-6-6z"/><path d="M21 14h2a3 3 0 0 1 0 6h-2"/><path d="M15 5v4"/></svg>
+            </button>
+            <label>1 Cup</label>
+            <button class="key" data-key="cup2" title="2 cups  [O]">
+              <svg viewBox="0 0 32 32"><path d="M3 13h9v6a4.5 4.5 0 0 1-9 0z"/><path d="M17 13h9v6a4.5 4.5 0 0 1-9 0z"/><path d="M7.5 6v4"/><path d="M21.5 6v4"/></svg>
+            </button>
+            <label>2 Cups</label>
+            <button class="key" data-key="hotwater" title="Hot water / OK  [P]">
+              <svg viewBox="0 0 32 32"><path d="M9 13h12v7a6 6 0 0 1-6 6h0a6 6 0 0 1-6-6z"/><path d="M12 4q-2 2 0 4t0 4"/><path d="M18 4q-2 2 0 4t0 4"/></svg>
+            </button>
+            <label>Hot water · OK</label>
+          </div>
+        </div>
+
+        <div class="bottom-row">
+          <div class="led-wrap"><span class="led" id="ledEsc"></span><span class="led-label">‹ ESC</span></div>
+          <div class="cappu">
+            <button class="key wide" data-key="cappu" title="Cappuccino  [C]">
+              <svg viewBox="0 0 48 32"><path d="M13 12h22v6a11 9 0 0 1-22 0z"/><path d="M14 12q3-5 7-2q3-4 7-1q4-3 7 3"/><path d="M35 13h3a3 3 0 0 1 0 6h-3"/></svg>
+            </button>
+            <label>Cappuccino</label>
+          </div>
+          <div class="led-wrap"><span class="led-label">OK ›</span><span class="led" id="ledOk"></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="spout">
+      <div class="cuplight" id="cupL"></div>
+      <div class="cuplight" id="cupR"></div>
+      <div class="buzzer" id="buzzer" title="buzzer">♪</div>
+    </div>
+    <p class="keyhelp">Keys: <kbd>Q</kbd> on/off · <kbd>W</kbd> P · <kbd>E</kbd> rinse/ESC · <kbd>I</kbd> 1 cup ·
+      <kbd>O</kbd> 2 cups · <kbd>P</kbd> hot water/OK · <kbd>C</kbd> cappuccino · <kbd>←</kbd><kbd>→</kbd> knob ·
+      <kbd>↓</kbd> push · <kbd>Space</kbd> pause</p>
+  </section>
+
+  <!-- ============================== side panel ============================== -->
+  <aside class="side">
+    <details open>
+      <summary>Power board</summary>
+      <label class="row">run
+        <select id="pbMode">
+          <option value="stub">state machine stub</option>
+          <option value="real">real firmware (PIC18F4525)</option>
+        </select>
+      </label>
+      <div class="pb-state" id="pbState">—</div>
+      <label class="row"><input type="checkbox" id="pbConnected" checked> link connected</label>
+      <div class="grid2" id="pbSettings"></div>
+      <div class="stats" id="pbStats"></div>
+    </details>
+
+    <details open id="plantPanel" hidden>
+      <summary>Machine</summary>
+      <div class="toggles" id="plantEnv"></div>
+      <div class="plant" id="plantView"></div>
+      <div class="loads" id="plantLoads"></div>
+      <div class="cpu" id="pbCpu"></div>
+    </details>
+
+    <details open id="alarmPanel">
+      <summary>Alarms &amp; sensors</summary>
+      <div class="toggles" id="alarms"></div>
+    </details>
+
+    <details id="manualPanel">
+      <summary>Manual frame · test modes</summary>
+      <label class="row"><input type="checkbox" id="manualOn"> override the state machine</label>
+      <label class="row">preset
+        <select id="preset"></select>
+      </label>
+      <div class="frame-edit" id="frameEdit"></div>
+      <p class="hint">Values are hex. See docs/protocol.md for the meaning of each byte.</p>
+    </details>
+
+    <details open>
+      <summary>SPI frames</summary>
+      <div class="frame"><span class="tag">display → PB</span><code id="frameTx">—</code></div>
+      <div class="frame"><span class="tag">PB → display</span><code id="frameRx">—</code></div>
+      <div class="decode" id="frameDecode"></div>
+    </details>
+
+    <details>
+      <summary>Service port (UART)</summary>
+      <p class="hint">Service mode is entered by holding the knob at power up.</p>
+      <button id="svcBoot">Restart in service mode</button>
+      <div class="row">address 0x<input id="svcAddr" value="0014" size="5">
+        <button id="svcRead">Read 16 bytes (0x95)</button>
+        <button id="svcSum">EEPROM sum (0xB3)</button></div>
+      <pre id="svcLog" class="log"></pre>
+    </details>
+
+    <details open>
+      <summary>Emulator</summary>
+      <div class="row">
+        <button id="run">Pause</button>
+        <button id="reset">Power cycle</button>
+        <label>speed <select id="speed"><option>0.25</option><option>0.5</option><option selected>1</option><option>2</option><option>5</option><option>10</option></select></label>
+        <label><input type="checkbox" id="sound" checked> sound</label>
+      </div>
+      <div class="row">
+        <label><input type="checkbox" id="rtcSet" checked> RTC already set</label>
+        <label>LCD <select id="lcdTheme"><option value="blue">white on blue</option><option value="green">black on yellow-green</option><option value="amber">amber on black</option></select></label>
+      </div>
+      <div class="row files">
+        <label>firmware <input type="file" id="fwFile" accept=".bin,.hex"></label>
+        <label>EEPROM <input type="file" id="eeFile" accept=".bin"></label>
+        <button id="eeSave">Save EEPROM</button>
+      </div>
+      <div class="cpu" id="cpu"></div>
+    </details>
+  </aside>
+</main>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

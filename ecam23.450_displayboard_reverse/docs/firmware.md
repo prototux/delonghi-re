@@ -167,3 +167,7 @@ The progress bar uses 0xFF (full block) on `_`. The level bars use 0xFD / 0x6F f
 - Byte 3 of the display→power frame (`0x14`) and EEPROM byte 2 (`0x65`): does the power board check them?
 - `fx.b1`, `ui.b2`, `pb_flags1.0` / glyph 0x10: meaning unknown (see comments in the C).
 - The exact connector pinout and voltage levels of the UART path through the 74HC4052: check the schematic.
+
+## Emulator
+
+`emulator/` runs the original firmware on an emulated PIC16F916, with the LCD, RTC, EEPROM and a stub power board. Its end-to-end tests (`emulator/test/`) confirm most of what this document describes; see `emulator/README.md`.

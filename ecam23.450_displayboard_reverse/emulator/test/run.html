@@ -1,0 +1,25 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Emulator tests</title>
+<style>body { font: 13px monospace; background: #111; color: #ddd; } .fail { color: #f66; }</style>
+<pre id="out"></pre>
+<script type="module">
+  import { runScenarios } from './scenarios.js';
+  const out = document.getElementById('out');
+  const params = new URLSearchParams(location.search);
+  const post = params.has('post');
+  const lines = [];
+  let chain = Promise.resolve();
+  const log = s => {
+    lines.push(s); out.textContent += s + '\n';
+    if (post) chain = chain.then(() => fetch('/log', { method: 'POST', body: s }));
+  };
+  const base = '../../../files/machines/ECAM_23.450/';
+  const get = async f => new Uint8Array(await (await fetch(base + f)).arrayBuffer());
+  const t0 = performance.now();
+  const fails = await runScenarios(await get('display_board_5513220041_v30_firmware.bin'),
+    await get('display_board_5513220041_v30_eeprom.bin'), log,
+    { only: params.get('only')?.split(','), pbImage: await get('power_board_unknown_v1.0_firmware.bin') });
+  log(`done in ${((performance.now() - t0) / 1000).toFixed(1)} s, ${fails} failure(s)`);
+  if (post) chain.then(() => fetch('/log', { method: 'POST', body: '__END__' }));
+</script>

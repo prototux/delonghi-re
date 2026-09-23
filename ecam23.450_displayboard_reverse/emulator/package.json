@@ -1,0 +1,9 @@
+{
+  "name": "ecam23450-displayboard-emulator",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test/run.mjs",
+    "serve": "cd ../.. && python3 -m http.server 8000"
+  }
+}

@@ -1,0 +1,45 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Real power board: brew log</title>
+<!--
+  Runs both original firmwares against the machine model (warm-up, a coffee,
+  then a coffee with no beans) and prints one line per step: LCD, the power
+  board frame, bu_pos and the learned stroke, and the plant (temperatures,
+  brew unit, water, loads). Handy to see what the power board does and to
+  tune core/plant.js. Lines also go to POST /log (test/logserver.py).
+-->
+<pre id="out"></pre>
+<script type="module">
+  import { Board } from '../core/board.js';
+  import { RealPowerBoard } from '../core/realpb.js';
+  import { Plant } from '../core/plant.js';
+  let chain = Promise.resolve();
+  const log = s => { document.getElementById('out').textContent += s + '\n'; chain = chain.then(() => fetch('/log', { method: 'POST', body: s })); };
+  const base = '../../../files/machines/ECAM_23.450/';
+  const get = async f => new Uint8Array(await (await fetch(base + f)).arrayBuffer());
+  const hex = a => a.map(x => (x ?? 0).toString(16).padStart(2, '0')).join(' ');
+  try {
+    const T0 = performance.now();
+    const plant = new Plant();
+    const pb = new RealPowerBoard(await get('power_board_unknown_v1.0_firmware.bin'), plant);
+    const b = new Board({ firmware: await get('display_board_5513220041_v30_firmware.bin'),
+      eeprom: await get('display_board_5513220041_v30_eeprom.bin'), powerboard: pb });
+    const snap = tag => log(`${b.cpu.time.toFixed(1).padStart(5)}s |${b.lcdText().join('|')}| st=${hex(pb.lastTx.slice(1,4))} fl=${hex(pb.lastTx.slice(4,10))} bu_pos=${pb.ram(0x6d) | pb.ram(0x6e) << 8} ref=${pb.ram(0xbc) | pb.ram(0xbd) << 8} ${plant.summary()} ${tag||''}`);
+    const press = (k, h = 0.2) => { b.keys[k] = true; b.run(h); b.keys[k] = false; b.run(0.2); };
+    b.run(3); snap('standby');
+    press('onoff');
+    for (let i = 0; i < 40; i++) { b.run(3); snap(); if (pb.lastTx[1] === 7 && pb.lastTx[2] === 0) break; }
+    const ready = () => pb.lastTx[1] === 7 && pb.lastTx[2] === 0;
+    const brew = (tag, n) => {
+      press('cup1'); snap(tag);
+      for (let i = 0; i < n; i++) { b.run(0.5); snap(); if (i > 12 && ready()) break; }
+    };
+    brew("1 cup", 120);
+    log(`grounds ${plant.grounds} water ${plant.water.toFixed(0)} ml`);
+    plant.env.beans = false;
+    brew("1 cup, no beans", 90);
+    log('real time ' + ((performance.now() - T0) / 1000).toFixed(1) + ' s');
+    log(`pb wdt ${pb.cpu.stats.wdtResets} bad ${pb.cpu.stats.badOps} eeWrites ${pb.cpu.stats.eeWrites}`);
+  } catch (e) { log('EXC ' + e.stack); }
+  chain.then(() => fetch('/log', { method: 'POST', body: '__END__' }));
+</script>
