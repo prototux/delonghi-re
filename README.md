@@ -22,7 +22,7 @@ It could be fun to add a (or even replace the front panel with) wifi/bluetooth e
 
 * Got some schematics and firmwares to analyze, the `ECAM 23.226` seems to use UART
 * Still need to make a little isolation board to MITM the serial connection (because the link is using negative voltages (!!) to the main power board)
-* Working on reverse engineering the Display Board firmware
+* Working on reverse engineering the Display Board firmware: a readable C rebuild is in `ecam23.450_displayboard_reverse/reimplem/`, and the power board link (SPI, not UART) is documented in `ecam23.450_displayboard_reverse/docs/protocol.md`
 
 ## Generalities
 

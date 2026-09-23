@@ -1,40 +1,24 @@
 # Serial communication between ECAM 23.450's power and display boards
 
-This is WIP, based on the reverse engineering of the display board firmware
+The full description is in `ecam23.450_displayboard_reverse/docs/protocol.md`.
 
-## Notes
+## Summary
 
-* The communication is packet-baset
-* Packets are at most 23 bytes long (0x17)
-* First packet seems to be the header
-* Second packet seems (with very high confidence) to be the packet size
-* Packets 3 to n are the data
-* Last byte seems to be a checksum
+- Normal operation uses **SPI**, not the UART. The display board is the master:
+  - mode 3, 125 kHz, no chip select;
+  - an 11-byte full-duplex frame every 30 ms, with ~1.7 ms between bytes;
+  - display → power: `B0 keys enc 14 hh mm ss flags cfg nlang chk`;
+  - power → display: `0B state p1 p2 flags1..5 progress chk`;
+  - checksum = 0x55 + sum of bytes 0..9.
+- The **UART** (9600 baud) is only a service mode, entered by holding the encoder button at power-up. A PC tool uses it to read and write the text EEPROM:
+  - requests start with 0x0A, replies with 0xA0;
+  - checksum = 0x55 XOR bytes 0..len-1;
+  - commands: 0x10 read 16 bytes, 0x85 write 16 bytes, 0x26 EEPROM sum.
 
-## Packet type 1 (unknown role)
+The "packet types" previously listed in this file were the replies of that service mode:
 
-* header: 0xa0
-* size 0x05
-* data[0]: unknown
-* data[1]: (variable @ bank-1/0x58)
-* data[2]: (variable @ bank-1/0x57)
-* checksum
-
-## Packet type 2 (unknown role)
-
-* header: 0xa0
-* size: 0x06
-* data[0]: 0x85
-* data[1]: unknown
-* data[2]: unknown
-* data[3]: (parameter of the function, stored @ bank-0:0x4f)
-* checksum
-
-## Packet type 3 (unknown role)
-
-* header: 0xa0
-* size: 0x15
-* data[0]: 0x95
-* data[1]: unknown
-* data[n]: unknown
-* checksum
+| earlier name | actually |
+|--------------|----------|
+| type 1 | reply to 0x26 (EEPROM sum) |
+| type 2 | reply to 0x85 (write) |
+| type 3 | reply to 0x10 (read) |

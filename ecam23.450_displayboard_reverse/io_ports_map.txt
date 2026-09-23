@@ -12,7 +12,7 @@ RA6 -> ctrl backlight LCD
 RC0 -> selector (left)
 RC1 -> selector (right)
 RC2 -> selector (push)
-RC3 -> serial mux selector
+RC3 -> serial mux selector (1 = SPI, 0 = UART service mode)
 
 # Right side
 RB7 -> buttons matrix (1 cup, hot water, menu/P pulldown) + debugger connector pin 2 (ISCP DATA)
@@ -28,4 +28,4 @@ RB0 => NC
 RX -> serial mux
 TX -> serial mux
 RC5 -> buzzer
-RC4 -> power board connector pin 2
+RC4 -> power board connector pin 2 (SPI SDO to the power board)
