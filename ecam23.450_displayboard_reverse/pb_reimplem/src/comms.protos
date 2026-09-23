@@ -1,0 +1,19 @@
+void comms_init(void); /* 0x4acc comms_init */
+void comms_update(void); /* 0x4af4 comms_update */
+void spi_build_reply(void); /* 0x4d16 spi_build_reply */
+uint8_t checksum(const volatile uint8_t *buf, uint8_t len, uint8_t add); /* 0x5f7a checksum */
+void isr_spi(void); /* 0x5fbe isr_spi */
+void isr_uart_rx(void); /* 0x6076 isr_uart_rx */
+void isr_uart_tx(void); /* 0x604c isr_uart_tx */
+void service_dispatch(void); /* 0x4bf4 comms_update (UART half) */
+void svc_reply_60(void); /* 0x51ea svc_reply_60 */
+void svc_reply_70(void); /* 0x5288 svc_reply_70 */
+void svc_reply_80(void); /* 0x536c svc_reply_80 */
+void svc_reply_81(void); /* 0x53f2 svc_reply_81 */
+void svc_read_params(void); /* 0x545c svc_read_params */
+void svc_reply_f0(void); /* 0x554a svc_reply_f0 */
+void svc_write_param(void); /* 0x55c8 svc_write_param */
+void pack_io_snapshot(void); /* 0x566e pack_io_snapshot */
+uint8_t recipe_code(void); /* 0x5704 recipe_code */
+uint32_t param_get(uint16_t id); /* 0x583c param_get */
+uint8_t param_set(uint16_t id, uint32_t v); /* 0x5cdc param_set */

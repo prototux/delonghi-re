@@ -1,0 +1,15 @@
+void main(void);                     /* 0x6100 main */
+void __interrupt() isr(void);        /* 0x6FCE isr */
+void timers_init(void);              /* 0x0040 timers_init */
+void zc_watch_init(void);            /* 0x0158 zc_watch_init */
+void timebase(void);                 /* 0x016A timebase */
+void adc_init(void);                 /* 0x0DA6 adc_init */
+void adc_task(void);                 /* 0x0DD8 adc_task */
+void isr_adc(void);                  /* 0x0EAE isr_adc */
+void inputs_clear(void);             /* 0x61A8 inputs_clear */
+void inputs_task(void);              /* 0x6208 inputs_task */
+void outputs_task(void);             /* 0x6302 outputs_task */
+void power_task(void);               /* 0x4998 power_task */
+void ee_load(void);                  /* 0x0980 ee_load */
+void ee_save_task(void);             /* 0x0B3A ee_save_task */
+void recA_defaults(uint8_t all);     /* 0x451A recA_defaults (menu_item_apply passes != 0xFF to keep language/options) */

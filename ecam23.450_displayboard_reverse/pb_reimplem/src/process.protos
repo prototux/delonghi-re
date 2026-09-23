@@ -1,0 +1,9 @@
+void machine_control(void); /* 0x10c0 machine_control */
+void grind_history_update(uint16_t stroke); /* 0x2be6 grind_history_update (stroke passed in r0f5:r0f6) */
+void grind_dose_compute(void); /* 0x2718 grind_dose_compute */
+uint8_t bin_to_bcd(uint8_t v); /* 0x2c8e bin_to_bcd */
+void menu_keys(void); /* 0x241c part of machine_control (menu keys and encoder) */
+void menu_item_open(void); /* 0x2cb8 menu_item_open */
+void menu_item_apply(void); /* 0x2dee menu_item_apply */
+void menu_time_inc(uint8_t which); /* 0x3002 menu_time_inc */
+void menu_time_dec(uint8_t which); /* 0x3044 menu_time_dec */

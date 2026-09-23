@@ -1,0 +1,2 @@
+void state_control(void); /* 0x3186 state_control */
+void monitor_faults(void); /* 0x803e monitor_faults */

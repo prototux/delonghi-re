@@ -78,6 +78,10 @@ Two caveats:
 - The encoder is modelled as a hand-turned knob, 15 ms per quadrature phase. The firmware polls it once per main-loop pass, and a pass can take ~12 ms while the LCD is being redrawn.
 - The LCD font for codes ≥ 0x80 is a reconstruction.
 
+## Recording the power board for the C reconstruction
+
+`test/pb_trace.html` runs both firmwares through a long session (brews, hot water, cappuccino, menu, alarms, UART service commands, factory tests). It records calls of the original power board functions: RAM and SFRs at entry, RAM at return. `pb_reimplem/` replays the records against its C code (`make difftest`, see `pb_reimplem/README.md`). The records are POSTed to `/log`: serve the repository root with `python3 emulator/test/logserver.py trace.log` instead of `http.server`, open `…/emulator/test/pb_trace.html` and wait for `__END__` at the end of `trace.log` (about 3 minutes).
+
 ## Findings made with the emulator
 
 - The UART service command codes are **0x85 / 0x95 / 0xB3**. The static analysis had read them as 0x85 / 0x10 / 0x26; that is fixed in `reimplem/` and `docs/`.

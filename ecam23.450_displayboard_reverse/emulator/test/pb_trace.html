@@ -1,0 +1,186 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Power board call recorder</title>
+<!--
+  Records calls of the original power board firmware for the differential
+  test of the C reconstruction (pb_reimplem, make difftest).
+
+  Both real firmwares run against the plant model through a scripted session.
+  When the PIC18 reaches a function entry through a CALL, the RAM and SFR page
+  are saved; when the stack drops below that level again, the RAM is saved
+  again. Interrupts are held off while a main-loop call is being recorded, so
+  the difference is the function's own work.
+
+  Each record is POSTed to /log as one line:
+    T <entry hex> <4096 bytes before, hex> <changed bytes after: aaa=vv,...>
+  (the output-side SFRs are always listed after the RAM changes)
+-->
+<pre id="out"></pre>
+<script type="module">
+  import { Board } from '../core/board.js';
+  import { RealPowerBoard } from '../core/realpb.js';
+  import { Plant } from '../core/plant.js';
+  import { PIC18_SFR as S } from '../core/pic18f4525.js';
+
+  const params = new URLSearchParams(location.search);
+  const CAP = +(params.get('cap') || 120);
+  let chain = Promise.resolve(), pendingPost = [];
+  const post = s => { pendingPost.push(s); if (pendingPost.length >= 20) flush(); };
+  const flush = () => { const body = pendingPost.join('\n'); pendingPost = []; if (body) chain = chain.then(() => fetch('/log', { method: 'POST', body })); };
+  const log = s => { document.getElementById('out').textContent += s + '\n'; post(s); };
+  const base = '../../../files/machines/ECAM_23.450/';
+  const get = async f => new Uint8Array(await (await fetch(base + f)).arrayBuffer());
+
+  // entry addresses to record (exported functions of the C reconstruction)
+  const ENTRIES = {
+    0x4acc: 'comms_init', 0x4af4: 'comms_update', 0x4d16: 'spi_build_reply', 0x5fbe: 'isr_spi',
+    0x6076: 'isr_uart_rx', 0x604c: 'isr_uart_tx', 0x51ea: 'svc_reply_60', 0x5288: 'svc_reply_70',
+    0x536c: 'svc_reply_80', 0x53f2: 'svc_reply_81', 0x545c: 'svc_read_params', 0x554a: 'svc_reply_f0',
+    0x55c8: 'svc_write_param', 0x566e: 'pack_io_snapshot', 0x3186: 'state_control', 0x803e: 'monitor_faults',
+    0x6fce: 'isr', 0x0040: 'timers_init', 0x0158: 'zc_watch_init', 0x016a: 'timebase', 0x0da6: 'adc_init',
+    0x0dd8: 'adc_task', 0x0eae: 'isr_adc', 0x61a8: 'inputs_clear', 0x6208: 'inputs_task', 0x6302: 'outputs_task',
+    0x4998: 'power_task', 0x10c0: 'machine_control', 0x2718: 'grind_dose_compute',
+    0x2cb8: 'menu_item_open', 0x2dee: 'menu_item_apply', 0x7106: 'heat_power_mgr', 0x72bc: 'heatB_ctrl',
+    0x7464: 'heatA_ctrl', 0x7768: 'brew_power_adapt', 0x7b90: 'pump_ctrl', 0x7dd2: 'grinder_ctrl',
+    0x7980: 'bu_motor', 0x7e58: 'wait_snapshot', 0x7e86: 'step_sequencer', 0x6b6e: 'progress_update',
+    0x6832: 'counters_update', 0x6386: 'test1_nop', 0x6388: 'test5_select', 0x63cc: 'test2_load',
+    0x64f8: 'test4_auto', 0x65c0: 'test3_remote',
+  };
+  const ISR = 0x6fce;
+  const HEX = Array.from({ length: 256 }, (_, i) => i.toString(16).padStart(2, '0'));
+
+  const count = {}, stored = {}, seen = new Set();   // shared by all the sessions
+  const ISR_DISPATCH = 0x703a;                        // first flag test, after the context save
+
+  function install(pb) {
+    const cpu = pb.cpu;
+    const pending = [];                 // records waiting for their return
+    let inIsr = 0;
+    const snap = () => {
+      const m = cpu.ram.slice(0, 4096);
+      'ABCDE'.split('').forEach((p, i) => { m[0xf80 + i] = cpu.pins(p) & (p === 'E' ? 0x0f : 0xff); });
+      m[S.WREG] = cpu.w;
+      m[S.PIR1] = cpu.read(S.PIR1);
+      m[S.TXSTA] = cpu.read(S.TXSTA);
+      m[S.RCREG] = cpu.rxFifo.length ? cpu.rxFifo[0] : 0;
+      m[S.TXREG] = cpu.txReg ?? 0;
+      return m;
+    };
+    // output-side SFRs, compared after the call (writes to PORTx land in LATx)
+    const SFR_OUT = ['LATA', 'LATB', 'LATC', 'LATD', 'LATE', 'TRISA', 'TRISB', 'TRISC', 'TRISD', 'TRISE',
+      'PIE1', 'PIE2', 'INTCON', 'T0CON', 'T1CON', 'T2CON', 'PR2', 'CCP1CON', 'ADCON0', 'ADCON1', 'ADCON2',
+      'SSPCON1', 'SSPSTAT', 'SSPBUF', 'TXREG', 'TXSTA', 'RCSTA', 'SPBRG', 'SPBRGH', 'BAUDCON', 'OSCCON', 'OSCTUNE']
+      .map(n => S[n]);
+    const sfrAfter = a => (a === S.TXREG ? (cpu.txReg ?? 0) : cpu.ram[a]);
+    const ip = cpu.interruptPending.bind(cpu);
+    cpu.interruptPending = () => (pending.some(p => !p.isr) ? false : ip());
+    const step = cpu.step.bind(cpu);
+    cpu.step = () => {
+      const sp0 = cpu.sp;
+      step();
+      const pc = cpu.pc;
+      // the ISR tests the flags after saving the context, and an SPI byte or
+      // a timer overflow may land in between: take the SFR page from there
+      if (pc === ISR_DISPATCH && pending.length && pending[pending.length - 1].pc === ISR) {
+        pending[pending.length - 1].before.set(snap().subarray(0xf80), 0xf80);
+      }
+      // a function entry reached by a CALL (or the ISR, reached by GOTO from 0x0008)
+      if (ENTRIES[pc] && (cpu.sp === ((sp0 + 1) & 31) || (pc === ISR && !pending.some(p => p.pc === ISR)))) {
+        const name = ENTRIES[pc];
+        const n = count[name] = (count[name] || 0) + 1;
+        const key = `${name}/${cpu.ram[0x03c]}/${cpu.ram[0x038]}/${cpu.ram[0xe88]}`;
+        const want = (stored[name] || 0) < CAP && (!seen.has(key) || n % (pc === ISR ? 211 : 37) === 0 || n < 4);
+        if (want) {
+          seen.add(key);
+          pending.push({ pc, sp: cpu.sp, before: snap(), isr: pc === ISR || inIsr > 0 });
+        }
+        if (pc === ISR) inIsr++;
+      }
+      // returns
+      while (pending.length) {
+        const p = pending[pending.length - 1];
+        const d = (cpu.sp - p.sp) & 31;
+        if (!(d > 16)) break;                       // still inside (sp >= entry sp)
+        pending.pop();
+        const after = cpu.ram, b = p.before, diff = [];
+        for (let a = 0; a < 0xf80; a++) if (after[a] !== b[a]) diff.push(a.toString(16) + '=' + HEX[after[a]]);
+        for (const a of SFR_OUT) diff.push(a.toString(16) + '=' + HEX[sfrAfter(a)]);
+        const bh = new Array(4096); for (let a = 0; a < 4096; a++) bh[a] = HEX[b[a]];
+        post(`T ${p.pc.toString(16)} ${bh.join('')} ${diff.join(',') || '-'}`);
+        const name = ENTRIES[p.pc];
+        stored[name] = (stored[name] || 0) + 1;
+      }
+      if (inIsr && (cpu.ram[S.INTCON] & 0x80) && pc !== ISR) inIsr = 0;   // RETFIE sets GIE
+    };
+  }
+
+  try {
+    const T0 = performance.now();
+    const plant = new Plant();
+    const pbImage = await get('power_board_unknown_v1.0_firmware.bin');
+    const dispFw = await get('display_board_5513220041_v30_firmware.bin');
+    const dispEe = await get('display_board_5513220041_v30_eeprom.bin');
+    let pb, b;
+    // power up both boards, optionally with keys held (factory test combos)
+    const boot = (held = []) => {
+      plant.powerOn();
+      pb = new RealPowerBoard(pbImage, plant, pb ? pb.cpu.eeprom : null);
+      install(pb);
+      b = new Board({ firmware: dispFw, eeprom: b ? b.eeprom.mem : dispEe, powerboard: pb });
+      for (const k of held) b.keys[k] = true;
+      b.run(2.5);
+      for (const k of held) b.keys[k] = false;
+      b.run(0.5);
+    };
+    boot();
+    const st = () => `${pb.lastTx[1]?.toString(16)}/${pb.lastTx[2]?.toString(16)} |${b.lcdText().join('|')}|`;
+    const press = (k, h = 0.2) => { b.keys[k] = true; b.run(h); b.keys[k] = false; b.run(0.3); };
+    const ready = () => pb.lastTx[1] === 7 && pb.lastTx[2] === 0;
+    const untilReady = (t = 120) => { const end = b.cpu.time + t; while (b.cpu.time < end && !ready()) b.run(0.25); b.run(1); };
+    const svc = (cmd, data = []) => {
+      const f = [0x0a, 0, cmd, 0x0f, ...data];      // the length byte is the checksum's index
+      f[1] = f.length; let c = 0x55; for (const x of f) c ^= x; f.push(c);
+      pb.cpu.uartInject(f); b.run(0.1);
+    };
+    const step = s => log(`${b.cpu.time.toFixed(1)}s ${s}: ${st()}`);
+
+    step('standby');
+    svc(0x60); svc(0x70); svc(0x95, [0x00, 0x3f, 0x02]); svc(0xf0);
+    press('onoff'); untilReady(); step('ready');
+    press('cup1'); untilReady(); step('1 cup');
+    b.turn(2); b.run(0.5); b.keys.push = true; b.run(0.2); b.keys.push = false; b.run(0.5);
+    press('cup2'); untilReady(150); step('2 cups, other drink/strength');
+    press('hotwater'); b.run(6); press('hotwater'); untilReady(); step('hot water');
+    press('cappu'); b.run(25); untilReady(); step('cappuccino');
+    press('rinse'); untilReady(); step('rinse');
+    // menu: open items, change a value, confirm, go back (OK = hot water, ESC = rinse)
+    for (const n of [3, 5, 6, 11, 12]) {
+      press('menu'); b.run(0.5);
+      for (let i = 0; i < n; i++) { b.turn(1); b.run(0.3); }
+      press('hotwater'); b.run(0.4); b.turn(1); b.run(0.4); press('hotwater'); b.run(0.5);
+      press('rinse'); b.run(0.4); if (pb.lastTx[1] >= 0x10) press('rinse'); b.run(0.5);
+      step(`menu item ${n}`);
+      untilReady(30);
+    }
+    svc(0x70); svc(0x90, [0x00, 0x3f, 0, 0, 0, 0x1d]); svc(0x95, [0x00, 0x67, 0x04]);
+    plant.env.waterInTank = false; b.run(3); step('tank empty');
+    plant.env.waterInTank = true; b.run(3);
+    plant.env.groundsPresent = false; b.run(7); plant.env.groundsPresent = true; plant.grounds = 0; b.run(3); step('grounds emptied');
+    plant.env.beans = false; press('cup1'); b.run(40); step('no beans');
+    plant.env.beans = true; press('rinse'); b.run(2); press('hotwater'); b.run(2); untilReady(60); step('after alarm');
+    svc(0x80, [0x01, 0, 0, 0]); b.run(2); svc(0x80, [0x03, 0, 0, 50]); b.run(3); svc(0x80, [0x00, 0, 0, 0]); b.run(6); step('remote load test');
+    press('onoff'); b.run(40); step('turning off');
+
+    // factory tests, entered by keys held at power up
+    boot(['cup1', 'hotwater']); step('load test');
+    for (const k of ['menu', 'cup1', 'hotwater', 'cappu', 'rinse', 'cup2', 'cup2']) { b.keys[k] = true; b.run(2); b.keys[k] = false; b.run(1); }
+    step('load test done');
+    boot(['hotwater', 'rinse']); b.run(62); step('automatic test');
+    boot(['cup1', 'onoff', 'hotwater']); press('rinse'); b.run(2); press('hotwater'); b.run(5); step('test 5');
+    boot(['cup2', 'hotwater']); b.run(5); press('onoff'); b.run(3); step('display test');
+    log(`records ${JSON.stringify(stored)}`);
+    log(`real time ${((performance.now() - T0) / 1000).toFixed(1)} s, pb wdt ${pb.cpu.stats.wdtResets} bad ${pb.cpu.stats.badOps}`);
+  } catch (e) { log('EXC ' + e.stack); }
+  flush();
+  chain.then(() => fetch('/log', { method: 'POST', body: '__END__' }));
+</script>
