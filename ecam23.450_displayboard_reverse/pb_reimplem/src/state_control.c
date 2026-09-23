@@ -33,7 +33,7 @@
 #define SN_BOTTOM    0x04   /* bit2 brew unit lower switch */
 #define SN_NO_GROUNDS 0x08  /* bit3 grounds container missing */
 #define SN_NO_TANK   0x10   /* bit4 water tank missing */
-#define SN_RA5       0x20   /* bit5 unknown switch (modifies the energy saving logic) */
+#define SN_RA5       0x20   /* bit5 milk carafe fitted (RA5 low; also changes the energy saving keep-warm) */
 
 /* alarms (r018) */
 #define AL_TANK_EMPTY 0x01

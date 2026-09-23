@@ -3,7 +3,7 @@
  * inputs_task, 0x6302 outputs_task, 0x4998 power_task).
  *
  * Pin map (see docs/pb_notes/hw.md):
- *   RA5  switch (unknown)          RA6  flowmeter (isr_tmr2)
+ *   RA5  milk carafe (low = fitted) RA6  flowmeter (isr_tmr2)
  *   RA7  brew unit top limit       RB0  grounds container (AC sensed)
  *   RB1  water tank (AC sensed)    RB2/RB5 brew unit motor up/down (isr_tmr0)
  *   RB3  main relay: loads and sensor supply
@@ -15,7 +15,7 @@
  * `sensors` (sent to the display as pb_flags3), 1 = active:
  *   0 spout present (RE0 low)      1 brew unit at the top (RA7 low)
  *   2 brew unit at the bottom (RE1) 3 grounds container missing (RB0 toggles)
- *   4 water tank missing (RB1 toggles) 5 RA5 low
+ *   4 water tank missing (RB1 toggles) 5 RA5 low (milk carafe fitted)
  *   6 water level low (RB4 low)
  */
 #include "pb.h"

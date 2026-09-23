@@ -6,6 +6,7 @@
 import { Board } from '../core/board.js';
 import { RealPowerBoard } from '../core/realpb.js';
 import { Plant } from '../core/plant.js';
+import { attachPlant } from '../core/stubplant.js';
 
 export async function runScenarios(firmware, eeprom, log, { only, pbImage } = {}) {
   let failures = 0, checks = 0;
@@ -248,11 +249,37 @@ export async function runScenarios(firmware, eeprom, log, { only, pbImage } = {}
       show(b, `${plant.water.toFixed(0)} ml pumped`);
       ok(runUntil(() => step() === 0, 60), 'back to ready');
       ok(plant.grounds === 1, 'the puck went into the grounds container');
+      ok(plant.poured.coffee > 30, `coffee came out of the spout (${plant.poured.coffee.toFixed(0)} ml)`);
       plant.env.beans = false;
       press(b, 'cup1');
       ok(until(b, /FILL BEANS/, 40), 'an empty hopper gives "FILL BEANS CONTAINER"');
       show(b);
       ok(pb.cpu.stats.wdtResets === 0 && pb.cpu.stats.badOps === 0, 'power board: no watchdog reset, no bad opcode');
+      return b;
+    },
+
+    // the stub driving the machine model: what the views show in stub mode
+    async stubplant() {
+      const plant = new Plant();
+      const b = mk();
+      attachPlant(b.pb, plant);
+      b.run(3.2);
+      press(b, 'onoff');
+      ok(until(b, /ESPRESSO/, 12), 'stub warm-up to ready');
+      ok(plant.poured.water > 5, `warm-up rinse through the coffee spout (${plant.poured.water.toFixed(0)} ml)`);
+      press(b, 'cup1');
+      b.run(8.5);
+      ok(plant.poured.coffee > 20 && plant.grounds === 1, `a coffee (${plant.poured.coffee.toFixed(0)} ml) and its puck`);
+      plant.env.tankPresent = false;
+      b.run(0.5);
+      show(b);
+      expect(b, /FILL TANK|WATER TANK|INSERT/i, 'taking the tank out of the model raises the stub alarm');
+      plant.env.tankPresent = true;
+      b.run(0.5);
+      plant.env.accessory = 'carafe';
+      press(b, 'cappu');
+      b.run(9);
+      ok(plant.poured.milk > 50, `milk from the carafe (${plant.poured.milk.toFixed(0)} ml)`);
       return b;
     },
   };

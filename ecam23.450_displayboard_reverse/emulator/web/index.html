@@ -8,7 +8,12 @@
 </head>
 <body>
 <header>
-  <h1>ECAM 23.450 display board <span>emulator</span></h1>
+  <h1>ECAM 23.450 <span>emulator</span></h1>
+  <div class="modes" role="group" aria-label="Power board">
+    <span>power board</span>
+    <button data-pbmode="real" title="The original power board firmware on an emulated PIC18F4525">emulated firmware</button>
+    <button data-pbmode="stub" title="A simplified state machine written for this emulator">stub</button>
+  </div>
   <div id="status" class="status">loading firmware…</div>
 </header>
 
@@ -76,11 +81,7 @@
         </div>
       </div>
     </div>
-    <div class="spout">
-      <div class="cuplight" id="cupL"></div>
-      <div class="cuplight" id="cupR"></div>
-      <div class="buzzer" id="buzzer" title="buzzer">♪</div>
-    </div>
+    <div id="cupView" class="cupview"></div>
     <p class="keyhelp">Keys: <kbd>Q</kbd> on/off · <kbd>W</kbd> P · <kbd>E</kbd> rinse/ESC · <kbd>I</kbd> 1 cup ·
       <kbd>O</kbd> 2 cups · <kbd>P</kbd> hot water/OK · <kbd>C</kbd> cappuccino · <kbd>←</kbd><kbd>→</kbd> knob ·
       <kbd>↓</kbd> push · <kbd>Space</kbd> pause</p>
@@ -90,28 +91,30 @@
   <aside class="side">
     <details open>
       <summary>Power board</summary>
-      <label class="row">run
-        <select id="pbMode">
-          <option value="stub">state machine stub</option>
-          <option value="real">real firmware (PIC18F4525)</option>
-        </select>
-      </label>
       <div class="pb-state" id="pbState">—</div>
       <label class="row"><input type="checkbox" id="pbConnected" checked> link connected</label>
       <div class="grid2" id="pbSettings"></div>
       <div class="stats" id="pbStats"></div>
-    </details>
-
-    <details open id="plantPanel" hidden>
-      <summary>Machine</summary>
-      <div class="toggles" id="plantEnv"></div>
-      <div class="plant" id="plantView"></div>
-      <div class="loads" id="plantLoads"></div>
       <div class="cpu" id="pbCpu"></div>
     </details>
 
+    <details open id="plantPanel">
+      <summary>Machine</summary>
+      <div class="toggles">
+        <label><input type="checkbox" id="mTank" checked> water tank in place</label>
+        <label><input type="checkbox" id="mGrounds" checked> grounds container in place</label>
+      </div>
+      <div class="row">
+        <button id="mFill">Fill tank</button><button id="mDrain">Empty tank</button>
+        <button id="mBeans">Refill beans</button><button id="mNoBeans">Empty hopper</button>
+      </div>
+      <p class="hint">The tank, the bean hopper and the grounds container can also be clicked in "Inside the machine";
+        the cup, the spout / carafe and the drip tray are under the control panel.</p>
+    </details>
+
     <details open id="alarmPanel">
-      <summary>Alarms &amp; sensors</summary>
+      <summary>Stub alarms</summary>
+      <p class="hint">Tank, grounds, beans, spout and carafe follow the machine; these are the others.</p>
       <div class="toggles" id="alarms"></div>
     </details>
 
@@ -163,6 +166,11 @@
     </details>
   </aside>
 </main>
+
+<section class="insidewrap">
+  <h2>Inside the machine <span id="insideNote"></span></h2>
+  <div id="insideView"></div>
+</section>
 
 <script type="module" src="app.js"></script>
 </body>

@@ -60,7 +60,7 @@ Each pass of the loop then:
 |---|---|---|
 | RA0/AN0 | in | NTC, steam thermoblock (`temp_steam`) |
 | RA1/AN1 | in | NTC, coffee thermoblock (`temp_coffee`) |
-| RA5 | in | switch → `sensors.5` (inverted); only changes the energy-saving behaviour. Its function is unknown |
+| RA5 | in | **milk carafe** fitted (low) → `sensors.5`. Milk needs it ("INSERT MILK CONTAINER"), hot water refuses to run with it, and it changes the energy saving keep-warm *(emulated)* |
 | RA6 | in | **flowmeter**: debounced 3 ms, about 2 pulses per ml |
 | RA7 | in | **brew unit top switch** → `sensors.1` (low = closed) |
 | RB0 | in | **grounds container** switch, AC-sensed: toggling with the mains = missing → `sensors.3` |
@@ -80,7 +80,7 @@ Each pass of the loop then:
 | RD5 | out | **EV1** solenoid valve (static) |
 | RD6 | out | **brew unit motor full power**: switched on after the soft start (static) |
 | RD7 | out | **steam heater** triac, burst firing |
-| RE0 | in | **hot water spout** present → `sensors.0` (low = present) |
+| RE0 | in | **hot water spout** fitted → `sensors.0` (low = fitted). Hot water asks for it ("INSERT WATER SPOUT") *(emulated)* |
 | RE1 | in | **brew unit bottom switch** → `sensors.2` (1 = at the bottom) |
 
 - **Unused pins:** RA2–RA4, RB6/RB7 (ICSP), RC0, RD0, RE2 and RE3 are inputs or unused.
@@ -327,6 +327,6 @@ The listing and the emulator both contradict the area notes in these places:
 
 ## Open points
 
-- The function of RA5 (`sensors.5`). It only changes the energy-saving keep-warm. The code runs that path with `settings.4` clear and `sensors.5` set, so one of the two is inverted with respect to its name.
+- **Energy saving and the carafe** *(emulated)*: with energy saving on (`settings.4`) and no carafe, the warm-up and ready states hold the coffee thermoblock at code 0xC8 (about 50 °C) and do not heat the steam side; the machine heats up when a drink is ordered. The warm-up only reaches "ready" once the coffee side has overshot the 0xC8 setpoint, which a real thermoblock does because its NTC sits near the heating element. The finer keep-warm logic of the steam side (`heat2_keepwarm` 0x30 / 0x40) is still to be read in detail.
 - Menu item 0x0E, and the exact use of the calibration bytes in record B.
 - The real NTC curve. The °C values above are fitted, not measured.

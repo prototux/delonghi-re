@@ -1,11 +1,15 @@
 // Front end of the emulator: renders the panel, forwards inputs to the
-// board, drives the power board stub from the side panel.
+// board, runs the power board (the real firmware or the stub) and the
+// machine model, and draws what happens inside and under the spout.
 
 import { Board } from '../core/board.js';
 import { STATE_NAMES, DRINKS, hex } from '../core/powerboard.js';
 import { RealPowerBoard } from '../core/realpb.js';
-import { Plant } from '../core/plant.js';
+import { Plant, CAPACITY } from '../core/plant.js';
+import { attachPlant, PHYSICAL_ALARMS } from '../core/stubplant.js';
 import { glyph } from './lcdfont.js';
+import { CupView } from './cupview.js';
+import { InsideView } from './insideview.js';
 
 const FILES = '../../../files/machines/ECAM_23.450/';
 const $ = id => document.getElementById(id);
@@ -13,8 +17,12 @@ const $ = id => document.getElementById(id);
 let fwBytes, fwName = 'display_board_5513220041_v30_firmware.bin', eeBytes;
 const PB_FW = 'power_board_unknown_v1.0_firmware.bin';
 let pbImage = null;                     // power board firmware, for the 'real' mode
-let pbMode = new URLSearchParams(location.search).get('pb') === 'real' ? 'real' : 'stub';
-let plant = null;                       // machine model around the real power board
+const params = new URLSearchParams(location.search);
+// the real power board firmware by default; the scripted demos use the stub
+// unless ?pb=real
+let pbMode = params.get('pb') || (params.get('demo') ? 'stub' : 'real');
+const plant = new Plant();              // the machine around the power board (both modes)
+let cupView = null, insideView = null;
 let board = null;
 let running = true;
 let speed = 1;
@@ -28,6 +36,7 @@ async function fetchBytes(name) {
 }
 
 async function init() {
+  buildSidePanel();
   try {
     fwBytes = await fetchBytes(fwName);
     eeBytes = await fetchBytes('display_board_5513220041_v30_eeprom.bin');
@@ -36,7 +45,6 @@ async function init() {
     $('status').innerHTML = `<span class="bad">Could not load the default images (${e.message}).</span> ` +
       'Serve the repository root over HTTP (see README) or pick the files below.';
   }
-  buildSidePanel();
   if (fwBytes && eeBytes) powerCycle();
   requestAnimationFrame(loop);
   // (the demo hook below runs before the first animation frame)
@@ -46,14 +54,17 @@ function powerCycle() {
   const prev = board;
   const eeprom = prev ? prev.eeprom.mem : eeBytes;         // keep EEPROM writes across power cycles
   let powerboard = null;
-  if (pbMode === 'real' && pbImage) {
-    if (!plant) plant = new Plant();
-    plant.powerOn();
+  if (pbMode === 'real' && !pbImage) pbMode = 'stub';
+  plant.powerOn();
+  if (pbMode === 'real') {
     powerboard = new RealPowerBoard(pbImage, plant, prev && prev.pb.cpu ? prev.pb.cpu.eeprom : null);
     powerboard.connected = $('pbConnected').checked;
   }
   board = new Board({ firmware: fwBytes, firmwareName: fwName, eeprom, clockSet: $('rtcSet').checked, powerboard });
   if (prev) board.rtc.regs.set(prev.rtc.regs);
+  if (!board.pb.cpu) attachPlant(board.pb, plant);
+  lastEmuT = null;
+  showPbPanels();
   if (prev && prev.pb.settings && board.pb.settings) {       // keep the stub's configuration
     Object.assign(board.pb.settings, prev.pb.settings);
     Object.assign(board.pb.alarms, prev.pb.alarms);
@@ -145,7 +156,7 @@ function sound(on, freq) {
   audio.gain.gain.setTargetAtTime(on ? 0.04 : 0, audio.ctx.currentTime, 0.003);
 }
 
-let lastFreq = 3968, lastOut = null;
+let lastFreq = 3968, lastOut = null, lastEmuT = null, wasReady = false;
 function render(now) {
   const o = board.outputs();
   lastOut = o;
@@ -160,16 +171,20 @@ function render(now) {
   led($('ledEsc'), o.esc);
   led($('ledOk'), o.ok);
 
-  for (const id of ['cupL', 'cupR']) {
-    const el = $(id), i = Math.min(1, o.cup);
-    el.style.background = i > 0.05 ? `rgba(215, 232, 255, ${0.25 + 0.75 * i})` : '';
-    el.style.boxShadow = i > 0.05 ? `0 0 26px 8px rgba(120, 170, 255, ${0.55 * i}), 0 18px 40px 10px rgba(255,255,255,${0.12 * i})` : '';
-  }
-
   if (o.pwm.on) lastFreq = o.pwm.freq;
-  const buzz = o.buzzer > 0.01;
-  $('buzzer').classList.toggle('on', buzz);
-  sound(buzz, lastFreq);
+  sound(o.buzzer > 0.01, lastFreq);
+
+  // machine views, advanced by the emulated time since the last frame
+  const t = board.cpu.time;
+  const dtEmu = lastEmuT === null ? 0 : Math.max(0, t - lastEmuT);
+  lastEmuT = t;
+  const f = board.pb.lastTx || [];
+  const ready = f[1] === 0x07 && f[2] === 0x00;
+  const state = f[1] & 0x3f;
+  if (wasReady && !ready && [0x07, 0x08, 0x0a, 0x0b].includes(state)) cupView.newDrink();
+  wasReady = ready;
+  cupView.update(o, dtEmu);
+  insideView.update(pbMode, dtEmu, board.pb);
 
   if (now - lastStat > 250) { lastStat = now; updatePanels(); }
 }
@@ -273,36 +288,45 @@ const FIELDS = ['state', 'p1', 'p2', 'f1', 'f2', 'f3', 'f4', 'f5', 'progress'];
 
 function buildSidePanel() {
   const al = $('alarms');
-  for (const [k, label] of ALARMS) {
+  for (const [k, label] of ALARMS.filter(([k]) => !PHYSICAL_ALARMS.includes(k))) {
     const l = document.createElement('label');
     l.innerHTML = `<input type="checkbox" data-alarm="${k}"> ${label}`;
     al.appendChild(l);
   }
   al.addEventListener('change', e => { if (board) board.pb.alarms[e.target.dataset.alarm] = e.target.checked; });
   $('pbConnected').onchange = e => { if (board) board.pb.connected = e.target.checked; };
-  $('pbMode').value = pbMode;
-  $('pbMode').onchange = e => {
-    pbMode = e.target.value;
-    if (pbMode === 'real' && !pbImage) {
-      $('status').innerHTML = `<span class="bad">${PB_FW} could not be loaded.</span>`;
-      pbMode = e.target.value = 'stub';
-    }
-    showPbPanels();
-    if (fwBytes && eeBytes) powerCycle();
-  };
+  document.querySelectorAll('[data-pbmode]').forEach(b => {
+    b.onclick = () => {
+      if (b.dataset.pbmode === pbMode) return;
+      if (b.dataset.pbmode === 'real' && !pbImage) {
+        $('status').innerHTML = `<span class="bad">${PB_FW} could not be loaded.</span>`;
+        return;
+      }
+      pbMode = b.dataset.pbmode;
+      if (fwBytes && eeBytes) powerCycle();
+      showPbPanels();
+    };
+  });
   showPbPanels();
 
-  const pe = $('plantEnv');
-  for (const [k, label] of PLANT_ENV) {
-    const l = document.createElement('label');
-    l.innerHTML = `<input type="checkbox" data-env="${k}" checked> ${label}`;
-    pe.appendChild(l);
-  }
-  pe.addEventListener('change', e => {
-    if (!plant) plant = new Plant();
-    const k = e.target.dataset.env;
-    plant.env[k] = e.target.checked;
-    if (k === 'groundsPresent' && !e.target.checked) plant.grounds = 0;   // emptied
+  // the machine: side panel controls, and clicks in the views
+  $('mTank').onchange = e => { plant.env.tankPresent = e.target.checked; };
+  $('mGrounds').onchange = e => toggleGrounds(e.target.checked);
+  $('mFill').onclick = () => { plant.tankMl = CAPACITY.tank; plant.env.waterInTank = true; };
+  $('mDrain').onclick = () => { plant.tankMl = 0; };
+  $('mBeans').onclick = () => { plant.beansG = CAPACITY.beans; plant.env.beans = true; };
+  $('mNoBeans').onclick = () => { plant.beansG = 0; };
+  cupView = new CupView($('cupView'), {
+    getPlant: () => plant,
+    onAccessory: acc => { plant.env.accessory = acc; },
+  });
+  insideView = new InsideView($('insideView'), {
+    getPlant: () => plant,
+    onToggle: what => {
+      if (what === 'tank') plant.env.tankPresent = !plant.env.tankPresent;
+      else if (what === 'grounds') toggleGrounds(!plant.env.groundsPresent);
+      else if (what === 'beans') $('mBeans').onclick();
+    },
   });
 
   const fe = $('frameEdit');
@@ -351,19 +375,22 @@ function buildSidePanel() {
   bindInputs();
 }
 
-const PLANT_ENV = [
-  ['tankPresent', 'water tank in place'], ['waterInTank', 'water in the tank'],
-  ['groundsPresent', 'grounds container in place'], ['spoutPresent', 'hot water spout fitted'],
-  ['beans', 'beans in the hopper'],
-];
+// taking the grounds container out empties it
+function toggleGrounds(present) {
+  plant.env.groundsPresent = present;
+  if (!present) plant.grounds = 0;
+}
 
-// the stub's controls make no sense with the real firmware and vice versa
+// the stub's controls make no sense with the real firmware
 function showPbPanels() {
   const real = pbMode === 'real';
-  $('plantPanel').hidden = !real;
   $('alarmPanel').hidden = real;
   $('manualPanel').hidden = real;
   $('pbSettings').hidden = real;
+  document.querySelectorAll('[data-pbmode]').forEach(b => b.classList.toggle('on', b.dataset.pbmode === pbMode));
+  $('insideNote').textContent = real
+    ? '· loads driven by the power board firmware'
+    : '· stub: loads simulated from its phases, timings invented';
 }
 
 function applyManual() {
@@ -398,6 +425,9 @@ function svcLog(s) { const el = $('svcLog'); el.textContent += s + '\n'; el.scro
 // ---- periodic panel refresh
 function updatePanels() {
   const pb = board.pb;
+  $('mTank').checked = plant.env.tankPresent;
+  $('mGrounds').checked = plant.env.groundsPresent;
+  if (!pb.cpu) $('pbCpu').textContent = '';
   if (pb.cpu) updateRealPb(pb); else updateStub(pb);
   updateFrames(pb);
   updateCpu();
@@ -411,21 +441,6 @@ function updateRealPb(pb) {
     : '<b>real firmware</b> · no frame yet';
   $('pbStats').textContent = `frames ${pb.frames} (bad ${pb.badFrames})`;
 
-  const p = plant, a = p.act || {};
-  const gauge = (label, value, frac, cls = '') =>
-    `<div class="gauge ${cls}">${label}<b>${value}</b><div class="bar"><i style="width:${Math.max(0, Math.min(100, frac * 100)).toFixed(0)}%"></i></div></div>`;
-  const buPos = pb.ram(0x6d) | (pb.ram(0x6e) << 8);
-  $('plantView').innerHTML =
-    gauge('coffee thermoblock', `${p.tA.toFixed(0)} °C`, (p.tA - 20) / 110, a.heatA ? 'hot' : '') +
-    gauge('steam thermoblock', `${p.tB.toFixed(0)} °C`, (p.tB - 20) / 140, a.heatB ? 'hot' : '') +
-    gauge('brew unit', `${p.pos.toFixed(0)} / ${p.TOP}`, p.pos / p.TOP) +
-    gauge('firmware bu_pos', `${buPos} (0x${buPos.toString(16)})`, buPos / 0xf2) +
-    gauge('water pumped', `${p.water.toFixed(0)} ml`, (p.water % 250) / 250) +
-    gauge('grounds container', `${p.grounds} puck${p.grounds === 1 ? '' : 's'}${p.cake > 0 ? ` · ${p.cake.toFixed(1)} s in chamber` : ''}`, p.grounds / 14);
-  $('plantLoads').innerHTML = [
-    ['relay', 'main relay'], ['heatA', 'coffee heater'], ['heatB', 'steam heater'], ['pump', 'pump'],
-    ['grinder', 'grinder'], ['up', 'brew unit up'], ['down', 'brew unit down'], ['ev1', 'EV1'], ['ev2', 'EV2'],
-  ].map(([k, n]) => `<span class="${a[k] ? 'on' : ''}">${n}</span>`).join('');
   const c = pb.cpu;
   $('pbCpu').textContent =
     `PIC18F4525 ${c.time.toFixed(1)} s   PC 0x${c.pc.toString(16).padStart(4, '0')}\n` +
@@ -483,13 +498,15 @@ function updateCpu() {
 const DEMOS = {
   standby: b => b.run(3.5),
   ready: b => { b.run(3.2); press(b, 'onoff'); b.run(10); },
-  brew: b => { b.run(3.2); press(b, 'onoff'); b.run(10); b.turn(1); b.run(0.4); press(b, 'cup2'); b.run(4.8); },
+  brew: b => { b.run(3.2); press(b, 'onoff'); b.run(10); cupView.serve(); b.turn(1); b.run(0.4); press(b, 'cup2'); b.run(4.8); },
   menu: b => { b.run(3.2); press(b, 'onoff'); b.run(10); press(b, 'menu'); b.run(0.4); press(b, 'hotwater'); b.run(0.6); },
   alarm: b => { b.run(3.2); press(b, 'onoff'); b.run(10); b.pb.alarms.beansEmpty = true; b.run(0.6); },
   cappu: b => { b.run(3.2); press(b, 'onoff'); b.run(10); press(b, 'cappu'); b.run(2.8); },
   // with ?pb=real: warm up on the real power board firmware, then brew
   warmup: b => { b.run(3.2); press(b, 'onoff'); b.run(45); },
-  coffee: b => { b.run(3.2); press(b, 'onoff'); untilReady(b); press(b, 'cup1'); b.run(20); },
+  coffee: b => { b.run(3.2); press(b, 'onoff'); untilReady(b); cupView.serve(); press(b, 'cup1'); b.run(40); },
+  hotwater: b => { b.run(3.2); press(b, 'onoff'); b.run(10); cupView.serve(); press(b, 'hotwater'); b.run(7); },
+  cappu2: b => { plant.env.accessory = 'carafe'; b.run(3.2); press(b, 'onoff'); untilReady(b); cupView.serve(); press(b, 'cappu'); b.run(60); },
 };
 function untilReady(b) {
   for (let i = 0; i < 300 && !(b.pb.lastTx && b.pb.lastTx[1] === 7 && b.pb.lastTx[2] === 0); i++) b.run(0.5);
