@@ -57,7 +57,9 @@
 #define LINK_SEL_SPI   PORTCbits.RC3
 #define BUZZER         PORTCbits.RC5
 
+#ifndef CLRWDT
 #define CLRWDT()       asm("CLRWDT")
+#endif
 
 /* I2C device addresses (8 bit, write) */
 #define I2C_LCD        0x78        /* ST7036 */

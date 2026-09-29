@@ -1,0 +1,139 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Firmware probe</title>
+<!--
+  Runs a firmware build in the emulator and reports where the CPU spends its
+  time, per function (from the XC8 .sym file), plus watchdog resets, invalid
+  opcodes and the LCD. For debugging the XC8 builds of reimplem/ and
+  pb_reimplem/. Paths are relative to the repository root:
+
+    fwprobe.html?dfw=<display .hex>&dsym=<.sym>       probe the display board
+    fwprobe.html?pbfw=<power board .hex>&pbsym=<.sym> probe the power board
+    &t=<seconds> (default 3)  &onoff=1 (press ON/OFF after 3 s)  &post (log to /log)
+-->
+<pre id="out"></pre>
+<script type="module">
+  import { Board } from '../core/board.js';
+  import { RealPowerBoard } from '../core/realpb.js';
+  import { Plant } from '../core/plant.js';
+
+  const params = new URLSearchParams(location.search);
+  let chain = Promise.resolve();
+  const log = s => {
+    document.getElementById('out').textContent += s + '\n';
+    if (params.has('post')) chain = chain.then(() => fetch('/log', { method: 'POST', body: s }));
+  };
+  const root = '../../../';
+  const orig = root + 'files/machines/ECAM_23.450/';
+  const bytes = async p => new Uint8Array(await (await fetch(p)).arrayBuffer());
+  const text = async p => (await fetch(p)).text();
+
+  // XC8 .sym: "name value flags space ..."; code ranges from _f / __end_of_f
+  async function loadSym(path, wordScale) {
+    if (!path) return null;
+    const starts = new Map(), ends = new Map();
+    for (const line of (await text(root + path)).split('\n')) {
+      const [name, val, , space] = line.trim().split(/\s+/);
+      if (space !== 'CODE') continue;
+      const a = parseInt(val, 16);
+      if (name.startsWith('__end_of_')) ends.set(name.slice(9), a);
+      else if (name.startsWith('_')) starts.set(name.slice(1), a);
+    }
+    const ranges = [];
+    for (const [n, a] of starts) if (ends.has(n)) ranges.push([a * wordScale, ends.get(n) * wordScale, n]);
+    ranges.sort((x, y) => x[0] - y[0]);
+    return pc => { for (const [a, b, n] of ranges) if (pc >= a && pc < b) return n; return '?'; };
+  }
+
+  function profile(cpu, name, pcScale = 1) {
+    const hist = new Map();
+    const step = cpu.step.bind(cpu);
+    cpu.step = () => { const pc = cpu.pc * pcScale; hist.set(pc, (hist.get(pc) || 0) + 1); step(); };
+    return () => {
+      const byFn = new Map(); let total = 0;
+      for (const [pc, n] of hist) { const f = name ? name(pc) : pc.toString(16); byFn.set(f, (byFn.get(f) || 0) + n); total += n; }
+      hist.clear();
+      return [...byFn].sort((a, b) => b[1] - a[1]).slice(0, 12)
+        .map(([f, n]) => `${(100 * n / total).toFixed(1).padStart(5)}% ${f}`).join('\n');
+    };
+  }
+
+  try {
+    const T = +(params.get('t') || 3);
+    const dfw = params.get('dfw'), pbfw = params.get('pbfw');
+    const plant = new Plant();
+    const pbOrig = await bytes(orig + 'power_board_unknown_v1.0_firmware.bin');
+    const pb = new RealPowerBoard(pbfw ? await bytes(root + pbfw) : pbOrig, plant, pbOrig.subarray(0xF00000, 0xF00400));
+    const b = new Board({
+      firmware: dfw ? await bytes(root + dfw) : await bytes(orig + 'display_board_5513220041_v30_firmware.bin'),
+      eeprom: await bytes(orig + 'display_board_5513220041_v30_eeprom.bin'), powerboard: pb,
+    });
+    // PIC16: the emulator's pc is a word address, and so is the .sym (x1);
+    // PIC18: byte addresses on both sides
+    const dname = await loadSym(params.get('dsym'), 1), pname = await loadSym(params.get('pbsym'), 1);
+    const dprof = profile(b.cpu, dname);
+    const pprof = profile(pb.cpu, pname);
+    // where the watchdog bites: PC and return addresses on the stack
+    // where the watchdog bites: the functions that ran in the last 20000
+    // instructions before the reset
+    const onWdt = (cpu, name, tag) => {
+      const ring = new Uint32Array(20000); let ri = 0;
+      const step = cpu.step.bind(cpu);
+      cpu.step = () => { ring[ri++ % ring.length] = cpu.pc; step(); };
+      const reset = cpu.reset.bind(cpu);
+      let n = 0;
+      cpu.reset = fromWdt => {
+        if (fromWdt && n++ < 3) {
+          const h = new Map();
+          for (const pc of ring) { const f = name ? name(pc) : pc.toString(16); h.set(f, (h.get(f) || 0) + 1); }
+          log(`${tag} WDT reset at 0x${cpu.pc.toString(16)} ${name ? name(cpu.pc) : ''} (t=${cpu.time.toFixed(3)} s); before it: ` +
+            [...h].sort((a, b) => b[1] - a[1]).slice(0, 6).map(([f, c]) => `${f} ${c}`).join(', '));
+          const hp = new Map();
+          for (const pc of ring) hp.set(pc, (hp.get(pc) || 0) + 1);
+          if (cpu.pir1) log(`  INTCON ${cpu.intcon.toString(16)} PIR1 ${cpu.pir1().toString(16)} PIE1 ${cpu.sfr[0x8c].toString(16)}`);
+          log('  hottest addresses: ' + [...hp].sort((a, b) => b[1] - a[1]).slice(0, 16).map(([a, c]) => `${a.toString(16)}:${c}`).join(' '));
+        }
+        reset(fromWdt);
+      };
+    };
+    // interrupt statistics: entries to the vector (0x0004 / 0x0008) per second
+    const isrStats = (cpu, vec) => {
+      const st = { entries: 0, steps: 0, inIsr: 0, src: {} };
+      const step = cpu.step.bind(cpu);
+      cpu.step = () => {
+        const gie = () => (cpu.intcon !== undefined ? cpu.intcon & 0x80 : cpu.ram[0xFF2] & 0x80);
+        const gieBefore = gie();
+        step();
+        st.steps++;
+        if (cpu.pc === vec && gieBefore) {
+          st.entries++;
+          if (cpu.pir1) {                       // PIC16: which source
+            const ic = cpu.intcon, src = [];
+            if (ic & 0x04 && ic & 0x20) src.push('T0');
+            if (ic & 0x02 && ic & 0x10) src.push('INT');
+            if (ic & 0x01 && ic & 0x08) src.push('RB');
+            const p = cpu.pir1() & cpu.sfr[0x8c];
+            if (ic & 0x40 && p) src.push('PIR1:' + p.toString(16));
+            const k = src.join('+') || 'none';
+            st.src[k] = (st.src[k] || 0) + 1;
+          }
+        }
+        if (!gie()) st.inIsr++;
+      };
+      return () => { const r = `${st.entries} interrupts ${JSON.stringify(st.src)}, ${(100 * st.inIsr / Math.max(1, st.steps)).toFixed(0)}% of instructions with GIE off`; st.entries = st.steps = st.inIsr = 0; st.src = {}; return r; };
+    };
+    const disr = isrStats(b.cpu, 4), pisr = isrStats(pb.cpu, 8);
+    onWdt(b.cpu, dname, 'display');
+    onWdt(pb.cpu, pname, 'power board');
+    for (let t = 1; t <= T; t++) {
+      b.run(1);
+      if (params.get('onoff') && t === 3) { b.keys.onoff = true; b.run(0.2); b.keys.onoff = false; }
+      log(`--- ${t} s  LCD |${b.lcdText().join('|')}|  frames ${pb.frames} (bad ${pb.badFrames})  tx ${pb.lastTx.map(x => x.toString(16)).join(' ')}`);
+      log(`display: wdt ${b.cpu.stats.wdtResets} bad ops ${b.cpu.stats.badOps} pc 0x${b.cpu.pc.toString(16)} · ${disr()}`);
+      log(dprof());
+      log(`power board: wdt ${pb.cpu.stats.wdtResets} bad ops ${pb.cpu.stats.badOps} stack overflows ${pb.cpu.stats.stackOverflows} pc 0x${pb.cpu.pc.toString(16)} · ${pisr()}`);
+      log(pprof());
+    }
+  } catch (e) { log('EXC ' + e.stack); }
+  chain.then(() => fetch('/log', { method: 'POST', body: '__END__' }));
+</script>

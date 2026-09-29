@@ -72,10 +72,21 @@ node test/run.mjs                 # or: node test/run.mjs brew,menu
 # without Node: serve the repo and open emulator/test/run.html
 ```
 
+**Testing firmware builds.** `run.html?dfw=<path>` replaces the display firmware and `run.html?pbfw=<path>` the power board firmware, with paths from the repository root. The XC8 builds of `reimplem/` and `pb_reimplem/` pass all 56 checks, alone or together. With a build that has an XC8 `.sym` next to its `.hex`, the checks that look at a firmware variable take its address from there.
+
+`test/fwprobe.html?dfw=...&dsym=...` (or `pbfw` / `pbsym`) is for debugging a build. It runs the firmware for a few seconds and reports:
+- where the CPU spends its time, per function;
+- the interrupt rate and load;
+- the LCD and the SPI frames;
+- for each watchdog reset, the code that ran just before it.
+
+The power board file picker in the Emulator box also loads a `.hex` build.
+
 ## What is emulated
 
 | Part | Model |
 |------|-------|
+| `core/firmware.js` | PIC16 `.bin` / `.hex` loaders, and `.hex` → programmer image for the PIC18. |
 | `core/pic16f916.js` | Full 35-instruction core with banking, 8-level stack and cycle counts. Peripherals: TMR0 with prescaler and write inhibit, WDT (resets are counted), TMR1, TMR2 + CCP1 PWM, SSP (SPI master), USART with baud timing, ports with read-modify-write on the pins, interrupts. The oscillator follows OSCCON. |
 | `core/i2c.js` | Bit-level open-drain I2C bus with the ST7036 LCD (DDRAM, CGRAM, instruction set), the M41T00 RTC (runs in emulated time, ST/OUT bits) and the M24256 EEPROM (64-byte pages, /WC pin, 5 ms busy after a write). |
 | `core/board.js` | Key matrix and encoder (active levels taken from the schematic), the 74HC4052 link mux, and the LED / backlight / cup light / buzzer outputs, sampled as duty cycles. |

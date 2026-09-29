@@ -24,15 +24,21 @@ host/xc.h         stand-in for <xc.h> so `make check` works without a PIC toolch
 
 ## Building
 
-- `make check`: syntax and type check with the host C compiler. This is the only check run so far.
-- `make`: builds with Microchip XC8 (`xc8-cc -mcpu=16F916`). This has not been tried. Expect to adjust:
-  - the `#pragma config` names;
-  - memory: the PIC16F916 has 352 bytes of RAM, and the original needed almost all of it.
+```sh
+make dfp      # once: download the PIC16Fxxx device family pack into ~/.mchp_packs
+make          # build/displayboard.hex with XC8 (the newest one under /opt/microchip/xc8)
+make check    # syntax and type check with the host C compiler, no PIC toolchain needed
+```
+
+XC8 v4.00 builds it without warnings: 7651 of 8192 words of flash and 313 of 352 bytes of RAM. The shared toolchain setup is in `../xc8.mk`. Override it with `make XC8=... DFP=...` for another install.
+
+The build needs `-mstackcall`. The PIC16F916 has an 8-level return stack, and the deepest call path plus an interrupt plus a `const` table read needs 9. Without the option the stack wraps and the firmware sits in a watchdog reset loop. The Makefile has the details.
 
 ## Status
 
 - Every function of the original is translated, except the C runtime helpers and three pieces of dead code.
 - The behaviour is kept as-is, oddities included; comments point them out.
-- Nothing has been run on hardware or in a simulator yet.
+- The XC8 build runs in the emulator: `../emulator/test/run.html?dfw=ecam23.450_displayboard_reverse/reimplem/build/displayboard.hex` runs the 56 checks of the emulator's scenarios on it, against the stub and against the original power board firmware. They all pass.
+- Nothing has been run on hardware yet.
 
 The old hand decompilation is kept in `../legacy_decompiled/` for reference. It has known errors, listed in `docs/firmware.md`.

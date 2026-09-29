@@ -41,14 +41,19 @@ The globals keep the names of `../tools/pb_symbols.py`, so the C and the disasse
 ## Building and checking
 
 ```sh
-make            # build/powerboard.hex with Microchip XC8 (xc8-cc in PATH)
+make dfp        # once: download the PIC18Fxxxx device family pack into ~/.mchp_packs
+make            # build/powerboard.hex with XC8 (the newest one under /opt/microchip/xc8)
 make header     # regenerate include/pb.h after editing a .vars/.protos file
 make check      # host compiler syntax/type check (-Wall -Wextra, clean)
 make link       # host link: every function defined exactly once
 make difftest TRACE=trace.log   # compare with the original binary, see below
 ```
 
-The XC8 build has not been tried: no XC8 toolchain was available while writing this.
+XC8 v4.00 builds it without warnings: 31786 of 49152 bytes of flash (the original uses about 34 KB) and 523 bytes of RAM. The configuration words match the original's.
+
+The build has no data EEPROM contents. On a blank chip `ee_load` finds no valid record and uses the defaults, like a factory-fresh board. The emulator starts it with the EEPROM of the original dump.
+
+**The XC8 build runs in the emulator.** `../emulator/test/run.html?pbfw=ecam23.450_displayboard_reverse/pb_reimplem/build/powerboard.hex` runs the 56 checks of the emulator's scenarios with it. That includes a full coffee against the machine model: warm-up, rinse, grind, compaction, dose and puck. They all pass, with the original display firmware and with the XC8 build of `../reimplem/` (`&dfw=...`). Nothing has been run on hardware yet.
 
 ## Differential test against the original binary
 

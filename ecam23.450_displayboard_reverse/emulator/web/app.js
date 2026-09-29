@@ -17,6 +17,7 @@ const $ = id => document.getElementById(id);
 let fwBytes, fwName = 'display_board_5513220041_v30_firmware.bin', eeBytes;
 const PB_FW = 'power_board_unknown_v1.0_firmware.bin';
 let pbImage = null;                     // power board firmware, for the 'real' mode
+let pbEeprom = null;                    // data EEPROM of the original dump, for builds without one
 const params = new URLSearchParams(location.search);
 // the real power board firmware by default; the scripted demos use the stub
 // unless ?pb=real
@@ -41,6 +42,7 @@ async function init() {
     fwBytes = await fetchBytes(fwName);
     eeBytes = await fetchBytes('display_board_5513220041_v30_eeprom.bin');
     pbImage = await fetchBytes(PB_FW).catch(() => null);
+    if (pbImage) pbEeprom = pbImage.slice(0xF00000, 0xF00400);
   } catch (e) {
     $('status').innerHTML = `<span class="bad">Could not load the default images (${e.message}).</span> ` +
       'Serve the repository root over HTTP (see README) or pick the files below.';
@@ -57,7 +59,7 @@ function powerCycle() {
   if (pbMode === 'real' && !pbImage) pbMode = 'stub';
   plant.powerOn();
   if (pbMode === 'real') {
-    powerboard = new RealPowerBoard(pbImage, plant, prev && prev.pb.cpu ? prev.pb.cpu.eeprom : null);
+    powerboard = new RealPowerBoard(pbImage, plant, prev && prev.pb.cpu ? prev.pb.cpu.eeprom : pbEeprom);
     powerboard.connected = $('pbConnected').checked;
   }
   board = new Board({ firmware: fwBytes, firmwareName: fwName, eeprom, clockSet: $('rtcSet').checked, powerboard });
@@ -355,6 +357,14 @@ function buildSidePanel() {
     fwBytes = new Uint8Array(await f.arrayBuffer()); fwName = f.name; board = null;
     if (eeBytes) powerCycle();
   };
+  // a power board build (.hex) or dump (.bin): runs in "emulated firmware" mode;
+  // its data EEPROM starts with the contents of the original dump
+  $('pbFile').onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    pbImage = new Uint8Array(await f.arrayBuffer());
+    pbMode = 'real'; board = null;
+    if (fwBytes && eeBytes) powerCycle();
+  };
   $('eeFile').onchange = async e => {
     const f = e.target.files[0]; if (!f) return;
     eeBytes = new Uint8Array(await f.arrayBuffer()); board = null;
@@ -525,7 +535,7 @@ if (demo && DEMOS[demo]) {
   };
   fwBytes = sync(fwName);
   eeBytes = sync('display_board_5513220041_v30_eeprom.bin');
-  if (pbMode === 'real') pbImage = sync(PB_FW);
+  if (pbMode === 'real') { pbImage = sync(PB_FW); pbEeprom = pbImage.slice(0xF00000, 0xF00400); }
   buildSidePanel();
   powerCycle();
   DEMOS[demo](board);

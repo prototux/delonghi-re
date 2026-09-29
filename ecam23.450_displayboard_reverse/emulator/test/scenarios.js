@@ -8,7 +8,7 @@ import { RealPowerBoard } from '../core/realpb.js';
 import { Plant } from '../core/plant.js';
 import { attachPlant } from '../core/stubplant.js';
 
-export async function runScenarios(firmware, eeprom, log, { only, pbImage } = {}) {
+export async function runScenarios(firmware, eeprom, log, { only, pbImage, pbEeprom, uiAddr = 0x2e, buPosAddr = 0x6d } = {}) {
   let failures = 0, checks = 0;
   const date = new Date(2026, 8, 23, 12, 34, 56);
   const mk = (opts = {}) => new Board({ firmware, eeprom, date, ...opts });
@@ -152,7 +152,7 @@ export async function runScenarios(firmware, eeprom, log, { only, pbImage } = {}
       b.pb.connected = false;
       b.run(3.0);
       show(b, 'power board silent for 3 s');
-      ok(b.cpu.ram[0x2e] & 0x80, 'firmware flags ui.link_lost after the 2.5 s timeout');
+      ok(b.cpu.ram[uiAddr] & 0x80, 'firmware flags ui.link_lost after the 2.5 s timeout');   // `ui` bit 7
       // quirk of the original: the text lines blank but the clock overlay stays (frozen)
       const t1 = lcd(b).join('|'); b.run(2); 
       ok(lcd(b).join('|') === t1, 'screen frozen while the link is down (clock overlay kept, as in the original)');
@@ -225,7 +225,7 @@ export async function runScenarios(firmware, eeprom, log, { only, pbImage } = {}
     async realpb() {
       if (!pbImage) { log('  skip (no power board image)'); return; }
       const plant = new Plant();
-      const pb = new RealPowerBoard(pbImage, plant);
+      const pb = new RealPowerBoard(pbImage, plant, pbEeprom);
       const b = mk({ powerboard: pb });
       const state = () => pb.lastTx[1], step = () => pb.lastTx[2];
       const runUntil = (cond, timeout) => {
@@ -244,7 +244,7 @@ export async function runScenarios(firmware, eeprom, log, { only, pbImage } = {}
       show(b);
       press(b, 'cup1');
       ok(runUntil(() => step() === 0x0b, 40), 'grind, compact, pre-infuse, then dose');
-      const measure = pb.ram(0x6d);
+      const measure = pb.ram(buPosAddr);                     // bu_pos (low byte)
       ok(measure >= 0xc9 && measure < 0xf2, `compaction stroke in the normal window (0x${measure.toString(16)})`);
       show(b, `${plant.water.toFixed(0)} ml pumped`);
       ok(runUntil(() => step() === 0, 60), 'back to ready');

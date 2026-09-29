@@ -7,11 +7,12 @@
 
 import { PIC18F4525, PIC18_SFR as S } from './pic18f4525.js';
 import { decodeDisplayFrame, frameOk } from './powerboard.js';
+import { pic18Image } from './firmware.js';
 
 export class RealPowerBoard {
   constructor(image, plant = {}, eeprom = null) {
     this.cpu = new PIC18F4525();
-    this.cpu.loadImage(image);
+    this.cpu.loadImage(pic18Image(image));          // raw dump or XC8 .hex
     if (eeprom) this.cpu.eeprom.set(eeprom);          // keep the data EEPROM across power cycles
     this.plant = plant;
     this.connected = true;

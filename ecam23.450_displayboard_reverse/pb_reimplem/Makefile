@@ -1,6 +1,7 @@
 # Power board firmware (PIC18F4525), C reconstruction
 #
-#   make          build with Microchip XC8 (xc8-cc must be in PATH)
+#   make          build/powerboard.hex with Microchip XC8 (see ../xc8.mk)
+#   make dfp      download the PIC18Fxxxx device family pack XC8 needs
 #   make header   regenerate include/pb.h and src/globals.c from src/*.vars, *.protos
 #   make check    syntax/type check with the host compiler (no PIC toolchain
 #                 needed): catches typos and prototype mismatches only.
@@ -8,14 +9,19 @@
 
 SRC  := $(wildcard src/*.c)
 CHIP := 18F4525
+DFP_NAME    := PIC18Fxxxx_DFP
+DFP_VERSION := 1.8.178
+include ../xc8.mk
+XC8FLAGS := -mcpu=$(CHIP) -mdfp=$(DFP) -O2 -Iinclude
 
 .PHONY: all header check link difftest clean
 
 all: build/powerboard.hex
 
 build/powerboard.hex: $(SRC) $(wildcard include/*.h)
+	$(need_dfp)
 	@mkdir -p build
-	xc8-cc -mcpu=$(CHIP) -O2 -Iinclude -o $@ $(SRC)
+	$(XC8) $(XC8FLAGS) -o $@ $(SRC)
 
 include/pb.h src/globals.c host/vartab.c: $(wildcard src/*.vars src/*.protos) tools/gen_header.py
 	python3 tools/gen_header.py

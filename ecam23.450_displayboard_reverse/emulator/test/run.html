@@ -16,10 +16,32 @@
   };
   const base = '../../../files/machines/ECAM_23.450/';
   const get = async f => new Uint8Array(await (await fetch(base + f)).arrayBuffer());
+  // ?dfw=<path> / ?pbfw=<path> (from the repository root) replace the original
+  // display / power board firmware, e.g. with the XC8 builds of reimplem/ and
+  // pb_reimplem/; the power board EEPROM then comes from the original dump
+  const fromRoot = async p => new Uint8Array(await (await fetch('../../../' + p)).arrayBuffer());
+  const pbOrig = await get('power_board_unknown_v1.0_firmware.bin');
+  const dfw = params.get('dfw'), pbfw = params.get('pbfw');
+  // a build places `ui` elsewhere than the original (0x2E): take it from its .sym
+  let uiAddr;
+  if (dfw) {
+    const sym = await (await fetch('../../../' + dfw.replace(/\.hex$/, '.sym'))).text().catch(() => '');
+    const m = sym.match(/^_ui ([0-9A-F]+) /m);
+    if (m) uiAddr = parseInt(m[1], 16);
+  }
+  let buPosAddr;
+  if (pbfw) {
+    const sym = await (await fetch('../../../' + pbfw.replace(/\.hex$/, '.sym'))).text().catch(() => '');
+    const m = sym.match(/^_bu_pos ([0-9A-F]+) /m);
+    if (m) buPosAddr = parseInt(m[1], 16);
+  }
   const t0 = performance.now();
-  const fails = await runScenarios(await get('display_board_5513220041_v30_firmware.bin'),
+  if (dfw) log(`display firmware: ${dfw}`);
+  if (pbfw) log(`power board firmware: ${pbfw}`);
+  const fails = await runScenarios(dfw ? await fromRoot(dfw) : await get('display_board_5513220041_v30_firmware.bin'),
     await get('display_board_5513220041_v30_eeprom.bin'), log,
-    { only: params.get('only')?.split(','), pbImage: await get('power_board_unknown_v1.0_firmware.bin') });
+    { only: params.get('only')?.split(','), pbImage: pbfw ? await fromRoot(pbfw) : pbOrig,
+      pbEeprom: pbOrig.subarray(0xF00000, 0xF00400), uiAddr, buPosAddr });
   log(`done in ${((performance.now() - t0) / 1000).toFixed(1)} s, ${fails} failure(s)`);
   if (post) chain.then(() => fetch('/log', { method: 'POST', body: '__END__' }));
 </script>

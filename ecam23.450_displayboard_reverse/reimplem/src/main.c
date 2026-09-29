@@ -48,7 +48,9 @@ static void hw_init(void)
     LCDCON = 0x00;          /* internal LCD driver unused                        */
     LCDSE0 = 0x00;
     LCDSE1 = 0x00;
-    LCDSE2 = 0x00;
+    /* LCDSE2 (0x11E) only exists on the 40-pin PIC16F917; the original clears
+       it anyway (CLRF 0x11E), which is harmless on the PIC16F916. */
+    *(volatile uint8_t *)0x11E = 0x00;
     LVDCON = 0x00;
     SSPSTAT = 0x00;
     SSPCON = 0x00;
